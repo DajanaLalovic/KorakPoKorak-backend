@@ -1,0 +1,25 @@
+# build folders
+bin/
+obj/
+
+# user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+
+# Rider / VS Code
+.idea/
+.vscode/
+
+# logs
+*.log
+
+# OS
+.DS_Store
+
+# env
+.env
