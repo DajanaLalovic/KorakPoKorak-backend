@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using KorakPoKorak.Application.IRepositories;
 using KorakPoKorak.Domain.Entities;
-using KorakPoKorak.Application.IRepositories;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace KorakPoKorak.Infrastructure.Repositories
 {
-    
     public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
@@ -21,17 +15,28 @@ namespace KorakPoKorak.Infrastructure.Repositories
 
         public List<User> GetAll()
         {
-            return _context.Users.ToList();
+            return _context.Users.Include(u => u.Role).ToList();
         }
 
-        public User GetById(int id)
+        public User? GetById(int id)
         {
-            return _context.Users.Find(id);
+            return _context.Users.Include(u => u.Role).FirstOrDefault(u => u.Id == id);
+        }
+
+        public User? GetByEmail(string email)
+        {
+            return _context.Users.Include(u => u.Role).FirstOrDefault(u => u.Email == email);
         }
 
         public void Add(User user)
         {
-           // _context.Users.Add(user);
+            _context.Users.Add(user);
+            _context.SaveChanges();
+        }
+
+        public void Update(User user)
+        {
+            _context.Users.Update(user);
             _context.SaveChanges();
         }
 
@@ -44,10 +49,5 @@ namespace KorakPoKorak.Infrastructure.Repositories
                 _context.SaveChanges();
             }
         }
-
-        public void Update(User user)
-        {
-            throw new NotImplementedException();
-        }
     }
-    }
+}
