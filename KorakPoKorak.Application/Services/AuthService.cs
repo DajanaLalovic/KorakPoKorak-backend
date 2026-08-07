@@ -45,7 +45,7 @@ namespace KorakPoKorak.Application.Services
             };
         }
 
-        public void Register(RegisterDto dto)
+        public AuthResponseDto Register(RegisterDto dto)
         {
             if (_repo.GetByEmail(dto.Email) != null)
                 throw new InvalidOperationException("A user with this email already exists.");
@@ -76,10 +76,23 @@ namespace KorakPoKorak.Application.Services
                 Phone = dto.Phone,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
-                RoleId = role.Id
+                RoleId = role.Id,
+                Role = role
             };
 
             _repo.Add(user);
+
+            var token = _tokenService.GenerateToken(user);
+
+            return new AuthResponseDto
+            {
+                Token = token,
+                UserId = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Role = user.Role.RoleName.ToString()
+            };
         }
     }
 }

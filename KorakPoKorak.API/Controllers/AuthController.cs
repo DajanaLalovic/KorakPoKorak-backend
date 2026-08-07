@@ -33,20 +33,31 @@ namespace KorakPoKorak.API.Controllers
         }
 
         /// <summary>
-        /// Registers a new user. The default assigned role is 'child'.
+        /// Registers a new user and returns a JWT token for immediate login.
         /// </summary>
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterDto dto)
         {
             try
             {
-                _authService.Register(dto);
-                return Ok(new { message = "Registration successful." });
+                var response = _authService.Register(dto);
+                return Ok(response);
             }
             catch (InvalidOperationException ex)
             {
                 return Conflict(new { message = ex.Message });
             }
+        }
+
+        /// <summary>
+        /// Stub: sends a password-reset email. Returns success regardless (email service not yet implemented).
+        /// </summary>
+        [HttpPost("forgot-password")]
+        public IActionResult ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            // Email delivery is not implemented yet. Return 200 to avoid leaking
+            // whether a given address exists in the system.
+            return Ok(new { success = true });
         }
     }
 }

@@ -12,6 +12,9 @@ public class AppDbContext : DbContext
     public DbSet<Workshop> Workshops { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<Exercise> Exercises { get; set; }
+    public DbSet<Quiz> Quizzes { get; set; }
+    public DbSet<Question> Questions { get; set; }
+    public DbSet<Answer> Answers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -57,6 +60,27 @@ public class AppDbContext : DbContext
             .WithMany(e => e.Workshops)
             .UsingEntity("WorkshopExercises");
 
+        // Quiz → User (created by)
+        modelBuilder.Entity<Quiz>()
+            .HasOne(qz => qz.CreatedBy)
+            .WithMany()
+            .HasForeignKey(qz => qz.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Question → Quiz (cascade delete)
+        modelBuilder.Entity<Question>()
+            .HasOne(qq => qq.Quiz)
+            .WithMany(qz => qz.Questions)
+            .HasForeignKey(qq => qq.QuizId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Answer → Question (cascade delete)
+        modelBuilder.Entity<Answer>()
+            .HasOne(a => a.Question)
+            .WithMany(qq => qq.Answers)
+            .HasForeignKey(a => a.QuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Store Workshop.ActivityTypes as JSON
         modelBuilder.Entity<Workshop>()
             .Property(w => w.ActivityTypes)
@@ -70,7 +94,8 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Role>().HasData(
             new Role { Id = 1, RoleName = UserRole.Administrator, Description = "System administrator with full access to all features." },
             new Role { Id = 2, RoleName = UserRole.Mentor, Description = "Mentor who guides and supports children on the platform." },
-            new Role { Id = 3, RoleName = UserRole.Child, Description = "Child user of the platform." }
+            new Role { Id = 3, RoleName = UserRole.Child, Description = "Child user of the platform." },
+            new Role { Id = 4, RoleName = UserRole.Parent, Description = "Parent who monitors and manages their child's learning progress." }
         );
     }
 }
