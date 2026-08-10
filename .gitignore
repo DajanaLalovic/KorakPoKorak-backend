@@ -23,3 +23,7 @@ obj/
 
 # env
 .env
+
+# uploaded child avatars (keep folder via .gitkeep)
+KorakPoKorak.API/wwwroot/uploads/children/*
+!KorakPoKorak.API/wwwroot/uploads/children/.gitkeep

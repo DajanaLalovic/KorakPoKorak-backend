@@ -38,6 +38,7 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IWorkshopRepository, WorkshopRepository>();
 builder.Services.AddScoped<ILessonRepository, LessonRepository>();
 builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
+builder.Services.AddScoped<IChildRepository, ChildRepository>();
 
 // Services
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
@@ -47,6 +48,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IWorkshopService, WorkshopService>();
 builder.Services.AddScoped<ILessonService, LessonService>();
 builder.Services.AddScoped<IExerciseService, ExerciseService>();
+builder.Services.AddScoped<IChildService, ChildService>();
+builder.Services.AddSingleton<IFileStorageService, LocalFileStorageService>();
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"]!;
@@ -114,6 +117,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseCors("FrontendPolicy");
 

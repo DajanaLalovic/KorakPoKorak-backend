@@ -4,6 +4,7 @@ namespace KorakPoKorak.Domain
     {
         Administrator,
         Mentor,
-        Child
+        Child,
+        Parent
     }
 }

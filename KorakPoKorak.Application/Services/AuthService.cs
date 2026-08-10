@@ -12,17 +12,20 @@ namespace KorakPoKorak.Application.Services
         private readonly IRoleRepository _roleRepo;
         private readonly ITokenService _tokenService;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IChildRepository _childRepo;
 
         public AuthService(
             IUserRepository repo,
             IRoleRepository roleRepo,
             ITokenService tokenService,
-            IPasswordHasher passwordHasher)
+            IPasswordHasher passwordHasher,
+            IChildRepository childRepo)
         {
             _repo = repo;
             _roleRepo = roleRepo;
             _tokenService = tokenService;
             _passwordHasher = passwordHasher;
+            _childRepo = childRepo;
         }
 
         public AuthResponseDto Login(LoginDto dto)
@@ -34,7 +37,7 @@ namespace KorakPoKorak.Application.Services
 
             var token = _tokenService.GenerateToken(user);
 
-            return new AuthResponseDto
+            var response = new AuthResponseDto
             {
                 Token = token,
                 UserId = user.Id,
@@ -43,6 +46,11 @@ namespace KorakPoKorak.Application.Services
                 Email = user.Email,
                 Role = user.Role.RoleName.ToString()
             };
+
+            if (user.Role.RoleName == UserRole.Parent)
+                response.Children = _childRepo.GetByParent(user.Id).Select(ChildService.MapToSummary).ToList();
+
+            return response;
         }
 
         public void Register(RegisterDto dto)

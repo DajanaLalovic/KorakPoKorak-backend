@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<Workshop> Workshops { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<Exercise> Exercises { get; set; }
+    public DbSet<ChildProfile> ChildProfiles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -66,11 +67,19 @@ public class AppDbContext : DbContext
             )
             .HasColumnType("jsonb");
 
+        // ChildProfile → User (parent, one-to-many)
+        modelBuilder.Entity<ChildProfile>()
+            .HasOne(c => c.Parent)
+            .WithMany()
+            .HasForeignKey(c => c.ParentId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Seed roles
         modelBuilder.Entity<Role>().HasData(
             new Role { Id = 1, RoleName = UserRole.Administrator, Description = "System administrator with full access to all features." },
             new Role { Id = 2, RoleName = UserRole.Mentor, Description = "Mentor who guides and supports children on the platform." },
-            new Role { Id = 3, RoleName = UserRole.Child, Description = "Child user of the platform." }
+            new Role { Id = 3, RoleName = UserRole.Child, Description = "Child user of the platform." },
+            new Role { Id = 4, RoleName = UserRole.Parent, Description = "Parent who manages their children's profiles and activities." }
         );
     }
 }
