@@ -17,5 +17,6 @@ namespace KorakPoKorak.Domain.Entities
 
         public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
         public ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
+        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     }
 }
