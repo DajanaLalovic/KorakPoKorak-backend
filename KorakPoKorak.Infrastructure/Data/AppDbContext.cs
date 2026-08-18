@@ -60,6 +60,12 @@ public class AppDbContext : DbContext
             .WithMany(e => e.Workshops)
             .UsingEntity("WorkshopExercises");
 
+        // Workshop ↔ User (contributors, many-to-many)
+        modelBuilder.Entity<Workshop>()
+            .HasMany(w => w.Contributors)
+            .WithMany()
+            .UsingEntity("WorkshopContributors");
+
         // Quiz → User (created by)
         modelBuilder.Entity<Quiz>()
             .HasOne(qz => qz.CreatedBy)

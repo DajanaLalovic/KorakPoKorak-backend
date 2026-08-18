@@ -22,6 +22,8 @@ namespace KorakPoKorak.API.Controllers
         [HttpGet]
         public IActionResult GetAll([FromQuery] ExerciseQueryParams q)
         {
+            if (q.OnlyMine)
+                q.CreatedById = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             return Ok(_service.GetFiltered(q));
         }
 

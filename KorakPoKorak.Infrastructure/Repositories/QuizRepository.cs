@@ -28,6 +28,9 @@ namespace KorakPoKorak.Infrastructure.Repositories
                 query = query.Where(qz => qz.Title.ToLower().Contains(s));
             }
 
+            if (q.CreatedById.HasValue)
+                query = query.Where(qz => qz.CreatedById == q.CreatedById.Value);
+
             var total = query.Count();
             var items = query
                 .OrderByDescending(qz => qz.CreatedAt)

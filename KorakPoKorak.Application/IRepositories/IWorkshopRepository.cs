@@ -13,8 +13,8 @@ namespace KorakPoKorak.Application.IRepositories
         List<Workshop> GetRecent(int count);
         List<Lesson> GetWorkshopLessons(int workshopId);
         List<Exercise> GetWorkshopExercises(int workshopId);
-        void Add(Workshop workshop, List<int> lessonIds, List<int> exerciseIds);
-        void Update(Workshop workshop, List<int> lessonIds, List<int> exerciseIds);
+        void Add(Workshop workshop, List<int> lessonIds, List<int> exerciseIds, List<int> contributorIds);
+        void Update(Workshop workshop, List<int> lessonIds, List<int> exerciseIds, List<int> contributorIds);
         void Delete(int id);
         void PatchStatus(int id, WorkshopStatus status);
         void AttachLesson(int workshopId, int lessonId);

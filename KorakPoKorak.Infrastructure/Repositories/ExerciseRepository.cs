@@ -29,6 +29,12 @@ namespace KorakPoKorak.Infrastructure.Repositories
             if (q.Printable.HasValue)
                 query = query.Where(e => e.IsPrintable == q.Printable.Value);
 
+            if (q.CreatedById.HasValue)
+                query = query.Where(e => e.CreatedById == q.CreatedById.Value);
+
+            if (q.Status.HasValue)
+                query = query.Where(e => e.Status == q.Status.Value);
+
             var total = query.Count();
             var items = query
                 .OrderByDescending(e => e.CreatedAt)

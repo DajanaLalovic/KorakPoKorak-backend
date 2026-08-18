@@ -89,7 +89,7 @@ namespace KorakPoKorak.Application.Services
                 CreatedById = createdById
             };
 
-            _repo.Add(workshop, dto.LessonIds, dto.ExerciseIds);
+            _repo.Add(workshop, dto.LessonIds, dto.ExerciseIds, dto.ContributorIds);
         }
 
         public void Update(int id, UpdateWorkshopDto dto)
@@ -105,7 +105,7 @@ namespace KorakPoKorak.Application.Services
             workshop.ActivityTypes = dto.ActivityTypes;
             workshop.Status = dto.Status;
 
-            _repo.Update(workshop, dto.LessonIds, dto.ExerciseIds);
+            _repo.Update(workshop, dto.LessonIds, dto.ExerciseIds, dto.ContributorIds);
         }
 
         public void Delete(int id)
@@ -151,6 +151,7 @@ namespace KorakPoKorak.Application.Services
             CreatedAt = w.CreatedAt,
             CreatedById = w.CreatedById,
             CreatedByName = $"{w.CreatedBy.FirstName} {w.CreatedBy.LastName}",
+            ContributorIds = w.Contributors.Select(c => c.Id).ToList(),
             LessonIds = w.Lessons.Select(l => l.Id).ToList(),
             ExerciseIds = w.Exercises.Select(e => e.Id).ToList()
         };

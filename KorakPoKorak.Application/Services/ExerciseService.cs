@@ -49,10 +49,10 @@ namespace KorakPoKorak.Application.Services
                 Title = dto.Title,
                 EstimatedTime = dto.EstimatedTime,
                 IsPrintable = dto.IsPrintable,
+                Status = dto.Status,
                 CreatedAt = DateTime.UtcNow,
                 CreatedById = createdById
             };
-
             _repo.Add(exercise);
         }
 
@@ -60,18 +60,14 @@ namespace KorakPoKorak.Application.Services
         {
             var exercise = _repo.GetById(id)
                 ?? throw new KeyNotFoundException($"Exercise with id {id} not found.");
-
             exercise.Title = dto.Title;
             exercise.EstimatedTime = dto.EstimatedTime;
             exercise.IsPrintable = dto.IsPrintable;
-
+            exercise.Status = dto.Status;
             _repo.Update(exercise);
         }
 
-        public void Delete(int id)
-        {
-            _repo.Delete(id);
-        }
+        public void Delete(int id) => _repo.Delete(id);
 
         internal static ExerciseDto MapToDto(Exercise e) => new()
         {
@@ -79,6 +75,7 @@ namespace KorakPoKorak.Application.Services
             Title = e.Title,
             EstimatedTime = e.EstimatedTime,
             IsPrintable = e.IsPrintable,
+            Status = e.Status,
             CreatedAt = e.CreatedAt,
             CreatedById = e.CreatedById,
             CreatedByName = $"{e.CreatedBy.FirstName} {e.CreatedBy.LastName}"

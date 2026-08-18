@@ -48,10 +48,10 @@ namespace KorakPoKorak.Application.Services
             {
                 Title = dto.Title,
                 EstimatedTime = dto.EstimatedTime,
+                Status = dto.Status,
                 CreatedAt = DateTime.UtcNow,
                 CreatedById = createdById
             };
-
             _repo.Add(lesson);
         }
 
@@ -59,23 +59,20 @@ namespace KorakPoKorak.Application.Services
         {
             var lesson = _repo.GetById(id)
                 ?? throw new KeyNotFoundException($"Lesson with id {id} not found.");
-
             lesson.Title = dto.Title;
             lesson.EstimatedTime = dto.EstimatedTime;
-
+            lesson.Status = dto.Status;
             _repo.Update(lesson);
         }
 
-        public void Delete(int id)
-        {
-            _repo.Delete(id);
-        }
+        public void Delete(int id) => _repo.Delete(id);
 
         internal static LessonDto MapToDto(Lesson l) => new()
         {
             Id = l.Id,
             Title = l.Title,
             EstimatedTime = l.EstimatedTime,
+            Status = l.Status,
             CreatedAt = l.CreatedAt,
             CreatedById = l.CreatedById,
             CreatedByName = $"{l.CreatedBy.FirstName} {l.CreatedBy.LastName}"

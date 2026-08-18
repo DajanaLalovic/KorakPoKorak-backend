@@ -23,6 +23,11 @@ namespace KorakPoKorak.API.Controllers
         [HttpGet]
         public IActionResult GetAll([FromQuery] WorkshopQueryParams q)
         {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (q.OnlyMine)
+                q.CreatedById = userId;
+            if (q.ContributorId.HasValue && q.ContributorId.Value == -1)
+                q.ContributorId = userId;
             return Ok(_service.GetFiltered(q));
         }
 
