@@ -466,6 +466,58 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.ToTable("WorkshopLessons");
                 });
 
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.ActivityProgress", b =>
+                {
+                    b.HasOne("KorakPoKorak.Domain.Entities.Enrollment", "Enrollment")
+                        .WithMany("ActivityProgresses")
+                        .HasForeignKey("EnrollmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Enrollment");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.ChildProfile", b =>
+                {
+                    b.HasOne("KorakPoKorak.Domain.Entities.User", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Enrollment", b =>
+                {
+                    b.HasOne("KorakPoKorak.Domain.Entities.ChildProfile", "ChildProfile")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("ChildProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KorakPoKorak.Domain.Entities.Workshop", "Workshop")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("WorkshopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ChildProfile");
+
+                    b.Navigation("Workshop");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Answer", b =>
+                {
+                    b.HasOne("KorakPoKorak.Domain.Entities.Question", "Question")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Exercise", b =>
                 {
                     b.HasOne("KorakPoKorak.Domain.Entities.User", "CreatedBy")
@@ -575,6 +627,26 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         .HasForeignKey("WorkshopsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.ChildProfile", b =>
+                {
+                    b.Navigation("Enrollments");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Enrollment", b =>
+                {
+                    b.Navigation("ActivityProgresses");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Question", b =>
+                {
+                    b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Quiz", b =>
+                {
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Role", b =>
