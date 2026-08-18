@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KorakPoKorak.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260809172441_AddChildProfileGenderAndNotes")]
+    partial class AddChildProfileGenderAndNotes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,40 +23,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("KorakPoKorak.Domain.Entities.ActivityProgress", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("Context")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("EnrollmentId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UnitId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UnitType")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EnrollmentId", "UnitType", "UnitId")
-                        .IsUnique();
-
-                    b.ToTable("ActivityProgresses");
-                });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.ChildProfile", b =>
                 {
@@ -99,67 +68,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.ToTable("ChildProfiles");
                 });
 
-            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Enrollment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChildProfileId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("EnrolledAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("StatusChangedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("WorkshopId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WorkshopId");
-
-                    b.HasIndex("ChildProfileId", "WorkshopId")
-                        .IsUnique();
-
-                    b.ToTable("Enrollments");
-                });
-
-            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Answer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("OrderIndex")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("Answers");
-                });
-
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Exercise", b =>
                 {
                     b.Property<int>("Id")
@@ -179,9 +87,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
 
                     b.Property<bool>("IsPrintable")
                         .HasColumnType("boolean");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -211,9 +116,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.Property<int>("EstimatedTime")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -223,62 +125,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.HasIndex("CreatedById");
 
                     b.ToTable("Lessons");
-                });
-
-            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Question", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("OrderIndex")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Points")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("QuizId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuizId");
-
-                    b.ToTable("Questions");
-                });
-
-            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Quiz", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.ToTable("Quizzes");
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Role", b =>
@@ -317,12 +163,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         {
                             Id = 3,
                             Description = "Child user of the platform.",
-                            RoleName = 3
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Parent who monitors and manages their child's learning progress.",
                             RoleName = 2
                         },
                         new
@@ -421,21 +261,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.ToTable("Workshops");
                 });
 
-            modelBuilder.Entity("WorkshopContributors", b =>
-                {
-                    b.Property<int>("ContributorsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("WorkshopId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ContributorsId", "WorkshopId");
-
-                    b.HasIndex("WorkshopId");
-
-                    b.ToTable("WorkshopContributors");
-                });
-
             modelBuilder.Entity("WorkshopExercises", b =>
                 {
                     b.Property<int>("ExercisesId")
@@ -466,6 +291,17 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.ToTable("WorkshopLessons");
                 });
 
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.ChildProfile", b =>
+                {
+                    b.HasOne("KorakPoKorak.Domain.Entities.User", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Exercise", b =>
                 {
                     b.HasOne("KorakPoKorak.Domain.Entities.User", "CreatedBy")
@@ -478,28 +314,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Lesson", b =>
-                {
-                    b.HasOne("KorakPoKorak.Domain.Entities.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CreatedBy");
-                });
-
-            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Question", b =>
-                {
-                    b.HasOne("KorakPoKorak.Domain.Entities.Quiz", "Quiz")
-                        .WithMany("Questions")
-                        .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Quiz");
-                });
-
-            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Quiz", b =>
                 {
                     b.HasOne("KorakPoKorak.Domain.Entities.User", "CreatedBy")
                         .WithMany()
@@ -530,21 +344,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
-                });
-
-            modelBuilder.Entity("WorkshopContributors", b =>
-                {
-                    b.HasOne("KorakPoKorak.Domain.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("ContributorsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KorakPoKorak.Domain.Entities.Workshop", null)
-                        .WithMany()
-                        .HasForeignKey("WorkshopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("WorkshopExercises", b =>
@@ -580,11 +379,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Role", b =>
                 {
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Workshop", b =>
-                {
-                    b.Navigation("Enrollments");
                 });
 #pragma warning restore 612, 618
         }

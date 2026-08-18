@@ -15,6 +15,9 @@ public class AppDbContext : DbContext
     public DbSet<Quiz> Quizzes { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<Answer> Answers { get; set; }
+    public DbSet<ChildProfile> ChildProfiles { get; set; }
+    public DbSet<Enrollment> Enrollments { get; set; }
+    public DbSet<ActivityProgress> ActivityProgresses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -96,12 +99,50 @@ public class AppDbContext : DbContext
             )
             .HasColumnType("jsonb");
 
+        // ChildProfile → User (parent, one-to-many)
+        modelBuilder.Entity<ChildProfile>()
+            .HasOne(c => c.Parent)
+            .WithMany()
+            .HasForeignKey(c => c.ParentId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Enrollment → ChildProfile (many-to-one)
+        modelBuilder.Entity<Enrollment>()
+            .HasOne(e => e.ChildProfile)
+            .WithMany(c => c.Enrollments)
+            .HasForeignKey(e => e.ChildProfileId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Enrollment → Workshop (many-to-one)
+        modelBuilder.Entity<Enrollment>()
+            .HasOne(e => e.Workshop)
+            .WithMany(w => w.Enrollments)
+            .HasForeignKey(e => e.WorkshopId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // One enrollment per ChildProfile + Workshop
+        modelBuilder.Entity<Enrollment>()
+            .HasIndex(e => new { e.ChildProfileId, e.WorkshopId })
+            .IsUnique();
+
+        // ActivityProgress → Enrollment (many-to-one)
+        modelBuilder.Entity<ActivityProgress>()
+            .HasOne(p => p.Enrollment)
+            .WithMany(e => e.ActivityProgresses)
+            .HasForeignKey(p => p.EnrollmentId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // One progress row per Enrollment + UnitType + UnitId
+        modelBuilder.Entity<ActivityProgress>()
+            .HasIndex(p => new { p.EnrollmentId, p.UnitType, p.UnitId })
+            .IsUnique();
+
         // Seed roles
         modelBuilder.Entity<Role>().HasData(
             new Role { Id = 1, RoleName = UserRole.Administrator, Description = "System administrator with full access to all features." },
             new Role { Id = 2, RoleName = UserRole.Mentor, Description = "Mentor who guides and supports children on the platform." },
             new Role { Id = 3, RoleName = UserRole.Child, Description = "Child user of the platform." },
-            new Role { Id = 4, RoleName = UserRole.Parent, Description = "Parent who monitors and manages their child's learning progress." }
+            new Role { Id = 4, RoleName = UserRole.Parent, Description = "Parent who manages their children's profiles and activities." }
         );
     }
 }
