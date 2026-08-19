@@ -12,10 +12,12 @@ namespace KorakPoKorak.API.Controllers
     public class ChildController : ControllerBase
     {
         private readonly IChildService _service;
+        private readonly IChildStatsService _statsService;
 
-        public ChildController(IChildService service)
+        public ChildController(IChildService service, IChildStatsService statsService)
         {
             _service = service;
+            _statsService = statsService;
         }
 
         /// <summary>Returns all children belonging to the currently logged-in Parent.</summary>
@@ -33,6 +35,21 @@ namespace KorakPoKorak.API.Controllers
             var parentId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var child = _service.GetById(childId, parentId);
             return child == null ? NotFound() : Ok(child);
+        }
+
+        /// <summary>Returns calculated stars and streak for the Parent's child.</summary>
+        [HttpGet("{childId:int}/stats")]
+        public IActionResult GetStats(int childId)
+        {
+            var parentId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            try
+            {
+                return Ok(_statsService.GetStats(childId, parentId));
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>Creates a new child profile for the logged-in Parent.</summary>

@@ -14,12 +14,15 @@ namespace KorakPoKorak.Infrastructure.Repositories
             _context = context;
         }
 
+        private IQueryable<Lesson> LessonsWithContent() =>
+            _context.Lessons
+                .Include(l => l.CreatedBy)
+                .Include(l => l.ContentBlocks)
+                    .ThenInclude(b => b.MediaAsset);
+
         public (List<Lesson> Items, int Total) GetFiltered(LessonQueryParams q)
         {
-            var query = _context.Lessons
-                .Include(l => l.CreatedBy)
-                .Include(l => l.Workshops)
-                .AsQueryable();
+            var query = LessonsWithContent().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(q.Search))
             {
@@ -45,17 +48,12 @@ namespace KorakPoKorak.Infrastructure.Repositories
 
         public Lesson? GetById(int id)
         {
-            return _context.Lessons
-                .Include(l => l.CreatedBy)
-                .Include(l => l.Workshops)
-                .FirstOrDefault(l => l.Id == id);
+            return LessonsWithContent().FirstOrDefault(l => l.Id == id);
         }
 
         public List<Lesson> GetMy(int userId)
         {
-            return _context.Lessons
-                .Include(l => l.CreatedBy)
-                .Include(l => l.Workshops)
+            return LessonsWithContent()
                 .Where(l => l.CreatedById == userId)
                 .OrderByDescending(l => l.CreatedAt)
                 .ToList();
@@ -63,9 +61,7 @@ namespace KorakPoKorak.Infrastructure.Repositories
 
         public List<Lesson> GetRecent(int count)
         {
-            return _context.Lessons
-                .Include(l => l.CreatedBy)
-                .Include(l => l.Workshops)
+            return LessonsWithContent()
                 .OrderByDescending(l => l.CreatedAt)
                 .Take(count)
                 .ToList();
@@ -85,12 +81,19 @@ namespace KorakPoKorak.Infrastructure.Repositories
 
         public void Delete(int id)
         {
-            var lesson = _context.Lessons.Find(id);
-            if (lesson != null)
+            var lesson = LessonsWithContent().FirstOrDefault(l => l.Id == id);
+            if (lesson == null)
+                return;
+
+            var assets = lesson.ContentBlocks.Select(b => b.MediaAsset).ToList();
+            if (lesson.ContentBlocks.Count > 0)
             {
-                _context.Lessons.Remove(lesson);
-                _context.SaveChanges();
+                _context.ContentBlocks.RemoveRange(lesson.ContentBlocks);
+                _context.MediaAssets.RemoveRange(assets);
             }
+
+            _context.Lessons.Remove(lesson);
+            _context.SaveChanges();
         }
     }
 }

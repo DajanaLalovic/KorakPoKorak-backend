@@ -12,5 +12,11 @@ namespace KorakPoKorak.Application.IServices
         /// Deletes a previously stored local child avatar if the URL points at our uploads folder.
         /// </summary>
         void DeleteChildAvatar(string? avatarUrl);
+
+        /// <summary>
+        /// Saves lesson/exercise content media under uploads/content and returns a public relative URL
+        /// (e.g. /uploads/content/{guid}.pdf).
+        /// </summary>
+        string SaveContentFile(Stream content, string extension);
     }
 }

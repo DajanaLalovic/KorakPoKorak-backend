@@ -8,10 +8,12 @@ namespace KorakPoKorak.Application.Services
     public class LessonService : ILessonService
     {
         private readonly ILessonRepository _repo;
+        private readonly IContentBlockRepository _contentRepo;
 
-        public LessonService(ILessonRepository repo)
+        public LessonService(ILessonRepository repo, IContentBlockRepository contentRepo)
         {
             _repo = repo;
+            _contentRepo = contentRepo;
         }
 
         public PagedResult<LessonDto> GetFiltered(LessonQueryParams q)
@@ -42,7 +44,7 @@ namespace KorakPoKorak.Application.Services
             return _repo.GetRecent(count).Select(MapToDto).ToList();
         }
 
-        public void Create(CreateLessonDto dto, int createdById)
+        public LessonDto Create(CreateLessonDto dto, int createdById)
         {
             var lesson = new Lesson
             {
@@ -53,9 +55,17 @@ namespace KorakPoKorak.Application.Services
                 CreatedById = createdById
             };
             _repo.Add(lesson);
+
+            if (dto.ContentBlocks != null && dto.ContentBlocks.Count > 0)
+            {
+                var assets = ContentBlockMapper.BuildAssets(dto.ContentBlocks, createdById);
+                _contentRepo.ReplaceForLesson(lesson.Id, assets);
+            }
+
+            return MapToDto(_repo.GetById(lesson.Id)!);
         }
 
-        public void Update(int id, UpdateLessonDto dto)
+        public LessonDto Update(int id, UpdateLessonDto dto)
         {
             var lesson = _repo.GetById(id)
                 ?? throw new KeyNotFoundException($"Lesson with id {id} not found.");
@@ -63,6 +73,16 @@ namespace KorakPoKorak.Application.Services
             lesson.EstimatedTime = dto.EstimatedTime;
             lesson.Status = dto.Status;
             _repo.Update(lesson);
+
+            if (dto.ContentBlocks != null)
+            {
+                IReadOnlyList<(MediaAsset Asset, int OrderIndex)> assets = dto.ContentBlocks.Count == 0
+                    ? Array.Empty<(MediaAsset Asset, int OrderIndex)>()
+                    : ContentBlockMapper.BuildAssets(dto.ContentBlocks, lesson.CreatedById);
+                _contentRepo.ReplaceForLesson(lesson.Id, assets);
+            }
+
+            return MapToDto(_repo.GetById(id)!);
         }
 
         public void Delete(int id) => _repo.Delete(id);
@@ -77,6 +97,7 @@ namespace KorakPoKorak.Application.Services
             CreatedById = l.CreatedById,
             CreatedByName = $"{l.CreatedBy.FirstName} {l.CreatedBy.LastName}",
             WorkshopCount = l.Workshops?.Count ?? 0
+            ContentBlocks = ContentBlockMapper.ToDtoList(l.ContentBlocks)
         };
     }
 }

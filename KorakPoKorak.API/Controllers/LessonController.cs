@@ -42,7 +42,7 @@ namespace KorakPoKorak.API.Controllers
             return Ok(_service.GetRecent(count));
         }
 
-        /// <summary>Returns a lesson by ID. All authenticated users.</summary>
+        /// <summary>Returns a lesson by ID including content blocks. All authenticated users.</summary>
         [HttpGet("{id:int}")]
         public IActionResult Get(int id)
         {
@@ -50,14 +50,20 @@ namespace KorakPoKorak.API.Controllers
             return lesson == null ? NotFound() : Ok(lesson);
         }
 
-        /// <summary>Creates a new lesson. Administrator and Mentor only.</summary>
+        /// <summary>Creates a new lesson (optional contentBlocks). Administrator and Mentor only.</summary>
         [HttpPost]
         [Authorize(Roles = "Administrator,Mentor")]
         public IActionResult Create([FromBody] CreateLessonDto dto)
         {
             var createdById = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            _service.Create(dto, createdById);
-            return Ok();
+            try
+            {
+                return Ok(_service.Create(dto, createdById));
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         /// <summary>Updates a lesson. Administrator and Mentor only.</summary>
@@ -67,12 +73,15 @@ namespace KorakPoKorak.API.Controllers
         {
             try
             {
-                _service.Update(id, dto);
-                return Ok();
+                return Ok(_service.Update(id, dto));
             }
             catch (KeyNotFoundException)
             {
                 return NotFound();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
 

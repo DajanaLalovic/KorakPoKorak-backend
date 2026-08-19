@@ -10,5 +10,6 @@ namespace KorakPoKorak.Application.IRepositories
         void Add(ActivityProgress progress);
         void Update(ActivityProgress progress);
         bool IsUnitInWorkshop(int workshopId, ActivityUnitType unitType, int unitId);
+        List<DateTime> GetDoneTimestampsForChild(int childId);
     }
 }

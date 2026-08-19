@@ -55,6 +55,354 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.ToTable("ActivityProgresses");
                 });
 
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.BadgeAward", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AwardedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("BadgeTemplateId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChildProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("EnrollmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Scope")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("WorkshopId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BadgeTemplateId");
+
+                    b.HasIndex("ChildProfileId");
+
+                    b.HasIndex("EnrollmentId");
+
+                    b.HasIndex("WorkshopId");
+
+                    b.HasIndex("ChildProfileId", "BadgeTemplateId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_BadgeAwards_OncePerChild")
+                        .HasFilter("\"Scope\" = 0");
+
+                    b.HasIndex("ChildProfileId", "BadgeTemplateId", "WorkshopId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_BadgeAwards_OncePerChildWorkshop")
+                        .HasFilter("\"Scope\" = 1 AND \"WorkshopId\" IS NOT NULL");
+
+                    b.ToTable("BadgeAwards");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.BadgeTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<string>("IconUrl")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<int>("Scope")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("BadgeTemplates");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Category = 0,
+                            Code = "WORKSHOP_MASTER",
+                            Description = "Dodeli se za svaku uspešno završenu radionicu.",
+                            IconUrl = "/badges/workshop_master.svg",
+                            Name = "Majstor radionice",
+                            Scope = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Category = 1,
+                            Code = "FIRST_WORKSHOP",
+                            Description = "Dodeli se za prvu uspešno završenu radionicu.",
+                            IconUrl = "/badges/first_workshop.svg",
+                            Name = "Prvi korak",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Category = 1,
+                            Code = "PERSISTENT",
+                            Description = "Dodeli se za drugu uspešno završenu radionicu.",
+                            IconUrl = "/badges/persistent.svg",
+                            Name = "Upornost",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Category = 1,
+                            Code = "THREE_WORKSHOPS",
+                            Description = "Dodeli se za treću uspešno završenu radionicu.",
+                            IconUrl = "/badges/three_workshops.svg",
+                            Name = "Iskusni istraživač",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Category = 1,
+                            Code = "CURIOUS_MIND",
+                            Description = "Dodeli se za četvrtu uspešno završenu radionicu.",
+                            IconUrl = "/badges/curious_mind.svg",
+                            Name = "Radoznali um",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Category = 1,
+                            Code = "FIVE_WORKSHOPS",
+                            Description = "Dodeli se za petu uspešno završenu radionicu.",
+                            IconUrl = "/badges/five_workshops.svg",
+                            Name = "Veliki istraživač",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Category = 1,
+                            Code = "GREAT_PROGRESS",
+                            Description = "Dodeli se za šestu uspešno završenu radionicu.",
+                            IconUrl = "/badges/great_progress.svg",
+                            Name = "Veliki napredak",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Category = 1,
+                            Code = "DEDICATED",
+                            Description = "Dodeli se za sedmu uspešno završenu radionicu.",
+                            IconUrl = "/badges/dedicated.svg",
+                            Name = "Posvećeni učenik",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Category = 1,
+                            Code = "EXPLORER",
+                            Description = "Dodeli se za osmu uspešno završenu radionicu.",
+                            IconUrl = "/badges/explorer.svg",
+                            Name = "Istraživač",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Category = 1,
+                            Code = "TEN_WORKSHOPS",
+                            Description = "Dodeli se za desetu uspešno završenu radionicu.",
+                            IconUrl = "/badges/ten_workshops.svg",
+                            Name = "Avanturista",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Category = 1,
+                            Code = "SUPER_LEARNER",
+                            Description = "Dodeli se za petnaestu uspešno završenu radionicu.",
+                            IconUrl = "/badges/super_learner.svg",
+                            Name = "Super učenik",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Category = 1,
+                            Code = "CHAMPION",
+                            Description = "Dodeli se za dvadesetu uspešno završenu radionicu.",
+                            IconUrl = "/badges/champion.svg",
+                            Name = "Šampion",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Category = 2,
+                            Code = "KNOWLEDGE_STAR",
+                            Description = "Dodeli se za prvu završenu radionicu srednje težine.",
+                            IconUrl = "/badges/knowledge_star.svg",
+                            Name = "Zvezda znanja",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Category = 2,
+                            Code = "BRAVE_STEP",
+                            Description = "Dodeli se za prvu završenu naprednu radionicu.",
+                            IconUrl = "/badges/brave_step.svg",
+                            Name = "Hrabri korak",
+                            Scope = 0
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Category = 0,
+                            Code = "CREATIVE_STAR",
+                            Description = "Dodeli se za prvu završenu radionicu sa više vrsta aktivnosti.",
+                            IconUrl = "/badges/creative_star.svg",
+                            Name = "Kreativna zvezda",
+                            Scope = 0
+                        });
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.CertificateAward", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CertificateNumber")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int>("CertificateTemplateId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CertificateTitle")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("ChildFullName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<int>("ChildProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EnrollmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("IssuedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MentorName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<int?>("WorkshopId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("WorkshopTitle")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CertificateNumber")
+                        .IsUnique();
+
+                    b.HasIndex("CertificateTemplateId");
+
+                    b.HasIndex("ChildProfileId");
+
+                    b.HasIndex("EnrollmentId")
+                        .IsUnique();
+
+                    b.HasIndex("WorkshopId");
+
+                    b.ToTable("CertificateAwards");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.CertificateTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("CertificateTemplates");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "DEFAULT_WORKSHOP",
+                            Description = "Potvrda o uspešno završenoj radionici.",
+                            Title = "Diploma"
+                        });
+                });
+
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.ChildProfile", b =>
                 {
                     b.Property<int>("Id")
@@ -97,6 +445,40 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.HasIndex("ParentId");
 
                     b.ToTable("ChildProfiles");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.ContentBlock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ExerciseId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("LessonId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MediaAssetId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExerciseId");
+
+                    b.HasIndex("LessonId");
+
+                    b.HasIndex("MediaAssetId");
+
+                    b.ToTable("ContentBlocks", t =>
+                        {
+                            t.HasCheckConstraint("CK_ContentBlocks_OneOwner", "(\"LessonId\" IS NOT NULL AND \"ExerciseId\" IS NULL) OR (\"LessonId\" IS NULL AND \"ExerciseId\" IS NOT NULL)");
+                        });
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Enrollment", b =>
@@ -223,6 +605,42 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.HasIndex("CreatedById");
 
                     b.ToTable("Lessons");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.MediaAsset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MimeType")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.ToTable("MediaAssets");
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Question", b =>
@@ -486,6 +904,73 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.Navigation("Enrollment");
                 });
 
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.BadgeAward", b =>
+                {
+                    b.HasOne("KorakPoKorak.Domain.Entities.BadgeTemplate", "BadgeTemplate")
+                        .WithMany("Awards")
+                        .HasForeignKey("BadgeTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KorakPoKorak.Domain.Entities.ChildProfile", "ChildProfile")
+                        .WithMany("BadgeAwards")
+                        .HasForeignKey("ChildProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KorakPoKorak.Domain.Entities.Enrollment", "Enrollment")
+                        .WithMany("BadgeAwards")
+                        .HasForeignKey("EnrollmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("KorakPoKorak.Domain.Entities.Workshop", "Workshop")
+                        .WithMany("BadgeAwards")
+                        .HasForeignKey("WorkshopId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("BadgeTemplate");
+
+                    b.Navigation("ChildProfile");
+
+                    b.Navigation("Enrollment");
+
+                    b.Navigation("Workshop");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.CertificateAward", b =>
+                {
+                    b.HasOne("KorakPoKorak.Domain.Entities.CertificateTemplate", "CertificateTemplate")
+                        .WithMany("Awards")
+                        .HasForeignKey("CertificateTemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("KorakPoKorak.Domain.Entities.ChildProfile", "ChildProfile")
+                        .WithMany("CertificateAwards")
+                        .HasForeignKey("ChildProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KorakPoKorak.Domain.Entities.Enrollment", "Enrollment")
+                        .WithOne("CertificateAward")
+                        .HasForeignKey("KorakPoKorak.Domain.Entities.CertificateAward", "EnrollmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KorakPoKorak.Domain.Entities.Workshop", "Workshop")
+                        .WithMany("CertificateAwards")
+                        .HasForeignKey("WorkshopId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("CertificateTemplate");
+
+                    b.Navigation("ChildProfile");
+
+                    b.Navigation("Enrollment");
+
+                    b.Navigation("Workshop");
+                });
+
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.ChildProfile", b =>
                 {
                     b.HasOne("KorakPoKorak.Domain.Entities.User", "Parent")
@@ -495,6 +980,31 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.ContentBlock", b =>
+                {
+                    b.HasOne("KorakPoKorak.Domain.Entities.Exercise", "Exercise")
+                        .WithMany("ContentBlocks")
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("KorakPoKorak.Domain.Entities.Lesson", "Lesson")
+                        .WithMany("ContentBlocks")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("KorakPoKorak.Domain.Entities.MediaAsset", "MediaAsset")
+                        .WithMany()
+                        .HasForeignKey("MediaAssetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Exercise");
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("MediaAsset");
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Enrollment", b =>
@@ -539,6 +1049,17 @@ namespace KorakPoKorak.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Lesson", b =>
+                {
+                    b.HasOne("KorakPoKorak.Domain.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.MediaAsset", b =>
                 {
                     b.HasOne("KorakPoKorak.Domain.Entities.User", "CreatedBy")
                         .WithMany()
@@ -638,14 +1159,62 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.BadgeTemplate", b =>
+                {
+                    b.Navigation("Awards");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.CertificateTemplate", b =>
+                {
+                    b.Navigation("Awards");
+                });
+
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.ChildProfile", b =>
                 {
+                    b.Navigation("BadgeAwards");
+
+                    b.Navigation("CertificateAwards");
+
                     b.Navigation("Enrollments");
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Enrollment", b =>
                 {
                     b.Navigation("ActivityProgresses");
+
+                    b.Navigation("BadgeAwards");
+
+                    b.Navigation("CertificateAward");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Exercise", b =>
+                {
+                    b.Navigation("ContentBlocks");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Lesson", b =>
+                {
+                    b.Navigation("ContentBlocks");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Question", b =>
+                {
+                    b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Quiz", b =>
+                {
+                    b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Question", b =>
+                {
+                    b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Quiz", b =>
+                {
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Question", b =>
@@ -665,6 +1234,10 @@ namespace KorakPoKorak.Infrastructure.Migrations
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Workshop", b =>
                 {
+                    b.Navigation("BadgeAwards");
+
+                    b.Navigation("CertificateAwards");
+
                     b.Navigation("Enrollments");
                 });
 #pragma warning restore 612, 618

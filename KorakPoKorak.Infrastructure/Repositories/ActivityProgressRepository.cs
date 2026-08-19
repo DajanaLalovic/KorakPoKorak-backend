@@ -56,5 +56,15 @@ namespace KorakPoKorak.Infrastructure.Repositories
                 _ => false
             };
         }
+
+        public List<DateTime> GetDoneTimestampsForChild(int childId)
+        {
+            return _context.ActivityProgresses
+                .Where(p =>
+                    p.Enrollment.ChildProfileId == childId
+                    && p.Status == ActivityProgressStatus.Done)
+                .Select(p => p.LastUpdated)
+                .ToList();
+        }
     }
 }

@@ -8,8 +8,8 @@ namespace KorakPoKorak.Application.IServices
         LessonDto? GetById(int id);
         List<LessonDto> GetMy(int userId);
         List<LessonDto> GetRecent(int count);
-        void Create(CreateLessonDto dto, int createdById);
-        void Update(int id, UpdateLessonDto dto);
+        LessonDto Create(CreateLessonDto dto, int createdById);
+        LessonDto Update(int id, UpdateLessonDto dto);
         void Delete(int id);
     }
 }

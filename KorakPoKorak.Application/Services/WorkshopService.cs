@@ -163,7 +163,8 @@ namespace KorakPoKorak.Application.Services
             EstimatedTime = l.EstimatedTime,
             CreatedAt = l.CreatedAt,
             CreatedById = l.CreatedById,
-            CreatedByName = $"{l.CreatedBy.FirstName} {l.CreatedBy.LastName}"
+            CreatedByName = $"{l.CreatedBy.FirstName} {l.CreatedBy.LastName}",
+            ContentBlocks = ContentBlockMapper.ToDtoList(l.ContentBlocks)
         };
 
         private static ExerciseDto MapExerciseToDto(Exercise e) => new()
@@ -174,7 +175,8 @@ namespace KorakPoKorak.Application.Services
             IsPrintable = e.IsPrintable,
             CreatedAt = e.CreatedAt,
             CreatedById = e.CreatedById,
-            CreatedByName = $"{e.CreatedBy.FirstName} {e.CreatedBy.LastName}"
+            CreatedByName = $"{e.CreatedBy.FirstName} {e.CreatedBy.LastName}",
+            ContentBlocks = ContentBlockMapper.ToDtoList(e.ContentBlocks)
         };
     }
 }

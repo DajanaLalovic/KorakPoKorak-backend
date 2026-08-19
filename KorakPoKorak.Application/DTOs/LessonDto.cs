@@ -12,5 +12,6 @@ namespace KorakPoKorak.Application.DTOs
         public int CreatedById { get; set; }
         public string CreatedByName { get; set; } = string.Empty;
         public int WorkshopCount { get; set; }
+        public List<ContentBlockDto> ContentBlocks { get; set; } = new();
     }
 }

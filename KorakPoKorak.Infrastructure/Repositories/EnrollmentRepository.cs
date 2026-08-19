@@ -1,4 +1,5 @@
 using KorakPoKorak.Application.IRepositories;
+using KorakPoKorak.Domain;
 using KorakPoKorak.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -49,6 +50,12 @@ namespace KorakPoKorak.Infrastructure.Repositories
         {
             return _context.Enrollments
                 .FirstOrDefault(e => e.ChildProfileId == childId && e.WorkshopId == workshopId);
+        }
+
+        public int CountCompletedByChild(int childId)
+        {
+            return _context.Enrollments.Count(e =>
+                e.ChildProfileId == childId && e.Status == EnrollmentStatus.Completed);
         }
 
         public void Add(Enrollment enrollment)
