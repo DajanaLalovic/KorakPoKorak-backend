@@ -28,6 +28,13 @@ namespace KorakPoKorak.Infrastructure.Repositories
             return _context.Users.Include(u => u.Role).FirstOrDefault(u => u.Email == email);
         }
 
+        public User? GetByActivationToken(string token)
+        {
+            return _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefault(u => u.ActivationToken == token);
+        }
+
         public void Add(User user)
         {
             _context.Users.Add(user);

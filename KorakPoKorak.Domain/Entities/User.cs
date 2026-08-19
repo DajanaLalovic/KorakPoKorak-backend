@@ -8,7 +8,9 @@
         public string Email { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
         public string? Phone { get; set; }
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; } = false;
+        public string? ActivationToken { get; set; }
+        public DateTime? ActivationTokenExpires { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public int RoleId { get; set; }

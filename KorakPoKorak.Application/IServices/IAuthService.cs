@@ -5,6 +5,7 @@ namespace KorakPoKorak.Application.IServices
     public interface IAuthService
     {
         AuthResponseDto Login(LoginDto dto);
-        AuthResponseDto Register(RegisterDto dto);
+        RegisterResponseDto Register(RegisterDto dto);
+        void ActivateAccount(string token);
     }
 }

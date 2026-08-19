@@ -30,6 +30,10 @@ public class AppDbContext : DbContext
             .HasForeignKey(u => u.RoleId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.ActivationToken)
+            .IsUnique();
+
         // Lesson → User (created by)
         modelBuilder.Entity<Lesson>()
             .HasOne(l => l.CreatedBy)

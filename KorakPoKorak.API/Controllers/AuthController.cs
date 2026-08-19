@@ -30,10 +30,14 @@ namespace KorakPoKorak.API.Controllers
             {
                 return Unauthorized(new { message = ex.Message });
             }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(403, new { message = ex.Message });
+            }
         }
 
         /// <summary>
-        /// Registers a new user and returns a JWT token for immediate login.
+        /// Registers a new inactive user and sends an activation email.
         /// </summary>
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterDto dto)
@@ -46,6 +50,27 @@ namespace KorakPoKorak.API.Controllers
             catch (InvalidOperationException ex)
             {
                 return Conflict(new { message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Activates a user account using the token from the confirmation email.
+        /// </summary>
+        [HttpPost("activate")]
+        public IActionResult Activate([FromBody] ActivateAccountDto dto)
+        {
+            try
+            {
+                _authService.ActivateAccount(dto.Token);
+                return Ok(new { message = "Account activated. You can now log in." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
 
