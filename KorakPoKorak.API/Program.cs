@@ -41,6 +41,9 @@ builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
 builder.Services.AddScoped<IChildRepository, ChildRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 builder.Services.AddScoped<IActivityProgressRepository, ActivityProgressRepository>();
+builder.Services.AddScoped<IContentBlockRepository, ContentBlockRepository>();
+builder.Services.AddScoped<IBadgeRepository, BadgeRepository>();
+builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
 
 // Services
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
@@ -51,8 +54,10 @@ builder.Services.AddScoped<IWorkshopService, WorkshopService>();
 builder.Services.AddScoped<ILessonService, LessonService>();
 builder.Services.AddScoped<IExerciseService, ExerciseService>();
 builder.Services.AddScoped<IChildService, ChildService>();
+builder.Services.AddScoped<IChildStatsService, ChildStatsService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IActivityProgressService, ActivityProgressService>();
+builder.Services.AddScoped<IWorkshopAwardService, WorkshopAwardService>();
 builder.Services.AddSingleton<IFileStorageService, LocalFileStorageService>();
 
 // JWT Authentication

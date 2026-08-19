@@ -11,15 +11,18 @@ namespace KorakPoKorak.Application.Services
         private readonly IEnrollmentRepository _enrollmentRepo;
         private readonly IChildRepository _childRepo;
         private readonly IWorkshopRepository _workshopRepo;
+        private readonly IWorkshopAwardService _awardService;
 
         public EnrollmentService(
             IEnrollmentRepository enrollmentRepo,
             IChildRepository childRepo,
-            IWorkshopRepository workshopRepo)
+            IWorkshopRepository workshopRepo,
+            IWorkshopAwardService awardService)
         {
             _enrollmentRepo = enrollmentRepo;
             _childRepo = childRepo;
             _workshopRepo = workshopRepo;
+            _awardService = awardService;
         }
 
         public EnrollmentDto Enroll(int childId, int parentId, CreateEnrollmentDto dto)
@@ -78,9 +81,13 @@ namespace KorakPoKorak.Application.Services
 
             if (enrollment.Status != dto.Status)
             {
+                var previous = enrollment.Status;
                 enrollment.Status = dto.Status;
                 enrollment.StatusChangedAt = DateTime.UtcNow;
                 _enrollmentRepo.Update(enrollment);
+
+                if (previous == EnrollmentStatus.Active && dto.Status == EnrollmentStatus.Completed)
+                    _awardService.IssueForCompletedEnrollment(enrollment);
             }
 
             return MapToDto(enrollment);

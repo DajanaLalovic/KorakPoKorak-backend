@@ -18,5 +18,7 @@ namespace KorakPoKorak.Domain.Entities
         public User Parent { get; set; } = null!;
 
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+        public ICollection<BadgeAward> BadgeAwards { get; set; } = new List<BadgeAward>();
+        public ICollection<CertificateAward> CertificateAwards { get; set; } = new List<CertificateAward>();
     }
 }

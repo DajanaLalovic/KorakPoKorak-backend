@@ -8,10 +8,12 @@ namespace KorakPoKorak.Application.Services
     public class ExerciseService : IExerciseService
     {
         private readonly IExerciseRepository _repo;
+        private readonly IContentBlockRepository _contentRepo;
 
-        public ExerciseService(IExerciseRepository repo)
+        public ExerciseService(IExerciseRepository repo, IContentBlockRepository contentRepo)
         {
             _repo = repo;
+            _contentRepo = contentRepo;
         }
 
         public PagedResult<ExerciseDto> GetFiltered(ExerciseQueryParams q)
@@ -42,7 +44,7 @@ namespace KorakPoKorak.Application.Services
             return _repo.GetRecent(count).Select(MapToDto).ToList();
         }
 
-        public void Create(CreateExerciseDto dto, int createdById)
+        public ExerciseDto Create(CreateExerciseDto dto, int createdById)
         {
             var exercise = new Exercise
             {
@@ -54,9 +56,17 @@ namespace KorakPoKorak.Application.Services
             };
 
             _repo.Add(exercise);
+
+            if (dto.ContentBlocks != null && dto.ContentBlocks.Count > 0)
+            {
+                var assets = ContentBlockMapper.BuildAssets(dto.ContentBlocks, createdById);
+                _contentRepo.ReplaceForExercise(exercise.Id, assets);
+            }
+
+            return MapToDto(_repo.GetById(exercise.Id)!);
         }
 
-        public void Update(int id, UpdateExerciseDto dto)
+        public ExerciseDto Update(int id, UpdateExerciseDto dto)
         {
             var exercise = _repo.GetById(id)
                 ?? throw new KeyNotFoundException($"Exercise with id {id} not found.");
@@ -64,8 +74,17 @@ namespace KorakPoKorak.Application.Services
             exercise.Title = dto.Title;
             exercise.EstimatedTime = dto.EstimatedTime;
             exercise.IsPrintable = dto.IsPrintable;
-
             _repo.Update(exercise);
+
+            if (dto.ContentBlocks != null)
+            {
+                IReadOnlyList<(MediaAsset Asset, int OrderIndex)> assets = dto.ContentBlocks.Count == 0
+                    ? Array.Empty<(MediaAsset Asset, int OrderIndex)>()
+                    : ContentBlockMapper.BuildAssets(dto.ContentBlocks, exercise.CreatedById);
+                _contentRepo.ReplaceForExercise(exercise.Id, assets);
+            }
+
+            return MapToDto(_repo.GetById(id)!);
         }
 
         public void Delete(int id)
@@ -81,7 +100,10 @@ namespace KorakPoKorak.Application.Services
             IsPrintable = e.IsPrintable,
             CreatedAt = e.CreatedAt,
             CreatedById = e.CreatedById,
-            CreatedByName = $"{e.CreatedBy.FirstName} {e.CreatedBy.LastName}"
+            CreatedByName = e.CreatedBy != null
+                ? $"{e.CreatedBy.FirstName} {e.CreatedBy.LastName}"
+                : string.Empty,
+            ContentBlocks = ContentBlockMapper.ToDtoList(e.ContentBlocks)
         };
     }
 }

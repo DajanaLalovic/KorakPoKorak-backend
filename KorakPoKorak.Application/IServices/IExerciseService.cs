@@ -8,8 +8,8 @@ namespace KorakPoKorak.Application.IServices
         ExerciseDto? GetById(int id);
         List<ExerciseDto> GetMy(int userId);
         List<ExerciseDto> GetRecent(int count);
-        void Create(CreateExerciseDto dto, int createdById);
-        void Update(int id, UpdateExerciseDto dto);
+        ExerciseDto Create(CreateExerciseDto dto, int createdById);
+        ExerciseDto Update(int id, UpdateExerciseDto dto);
         void Delete(int id);
     }
 }

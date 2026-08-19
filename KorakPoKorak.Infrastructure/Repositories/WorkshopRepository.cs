@@ -89,6 +89,8 @@ namespace KorakPoKorak.Infrastructure.Repositories
         {
             return _context.Lessons
                 .Include(l => l.CreatedBy)
+                .Include(l => l.ContentBlocks)
+                    .ThenInclude(b => b.MediaAsset)
                 .Where(l => l.Workshops.Any(w => w.Id == workshopId))
                 .ToList();
         }
@@ -97,6 +99,8 @@ namespace KorakPoKorak.Infrastructure.Repositories
         {
             return _context.Exercises
                 .Include(e => e.CreatedBy)
+                .Include(e => e.ContentBlocks)
+                    .ThenInclude(b => b.MediaAsset)
                 .Where(e => e.Workshops.Any(w => w.Id == workshopId))
                 .ToList();
         }

@@ -8,5 +8,6 @@ namespace KorakPoKorak.Application.DTOs
         public DateTime CreatedAt { get; set; }
         public int CreatedById { get; set; }
         public string CreatedByName { get; set; } = string.Empty;
+        public List<ContentBlockDto> ContentBlocks { get; set; } = new();
     }
 }

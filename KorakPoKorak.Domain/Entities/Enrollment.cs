@@ -17,5 +17,7 @@ namespace KorakPoKorak.Domain.Entities
         public DateTime StatusChangedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<ActivityProgress> ActivityProgresses { get; set; } = new List<ActivityProgress>();
+        public ICollection<BadgeAward> BadgeAwards { get; set; } = new List<BadgeAward>();
+        public CertificateAward? CertificateAward { get; set; }
     }
 }

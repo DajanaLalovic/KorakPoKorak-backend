@@ -40,7 +40,7 @@ namespace KorakPoKorak.API.Controllers
             return Ok(_service.GetRecent(count));
         }
 
-        /// <summary>Returns an exercise by ID. All authenticated users.</summary>
+        /// <summary>Returns an exercise by ID including content blocks. All authenticated users.</summary>
         [HttpGet("{id:int}")]
         public IActionResult Get(int id)
         {
@@ -48,14 +48,20 @@ namespace KorakPoKorak.API.Controllers
             return exercise == null ? NotFound() : Ok(exercise);
         }
 
-        /// <summary>Creates a new exercise. Administrator and Mentor only.</summary>
+        /// <summary>Creates a new exercise (optional contentBlocks). Administrator and Mentor only.</summary>
         [HttpPost]
         [Authorize(Roles = "Administrator,Mentor")]
         public IActionResult Create([FromBody] CreateExerciseDto dto)
         {
             var createdById = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            _service.Create(dto, createdById);
-            return Ok();
+            try
+            {
+                return Ok(_service.Create(dto, createdById));
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         /// <summary>Updates an exercise. Administrator and Mentor only.</summary>
@@ -65,12 +71,15 @@ namespace KorakPoKorak.API.Controllers
         {
             try
             {
-                _service.Update(id, dto);
-                return Ok();
+                return Ok(_service.Update(id, dto));
             }
             catch (KeyNotFoundException)
             {
                 return NotFound();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
 

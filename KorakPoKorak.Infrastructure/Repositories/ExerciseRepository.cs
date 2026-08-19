@@ -14,11 +14,15 @@ namespace KorakPoKorak.Infrastructure.Repositories
             _context = context;
         }
 
+        private IQueryable<Exercise> ExercisesWithContent() =>
+            _context.Exercises
+                .Include(e => e.CreatedBy)
+                .Include(e => e.ContentBlocks)
+                    .ThenInclude(b => b.MediaAsset);
+
         public (List<Exercise> Items, int Total) GetFiltered(ExerciseQueryParams q)
         {
-            var query = _context.Exercises
-                .Include(e => e.CreatedBy)
-                .AsQueryable();
+            var query = ExercisesWithContent().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(q.Search))
             {
@@ -41,13 +45,12 @@ namespace KorakPoKorak.Infrastructure.Repositories
 
         public Exercise? GetById(int id)
         {
-            return _context.Exercises.Include(e => e.CreatedBy).FirstOrDefault(e => e.Id == id);
+            return ExercisesWithContent().FirstOrDefault(e => e.Id == id);
         }
 
         public List<Exercise> GetMy(int userId)
         {
-            return _context.Exercises
-                .Include(e => e.CreatedBy)
+            return ExercisesWithContent()
                 .Where(e => e.CreatedById == userId)
                 .OrderByDescending(e => e.CreatedAt)
                 .ToList();
@@ -55,8 +58,7 @@ namespace KorakPoKorak.Infrastructure.Repositories
 
         public List<Exercise> GetRecent(int count)
         {
-            return _context.Exercises
-                .Include(e => e.CreatedBy)
+            return ExercisesWithContent()
                 .OrderByDescending(e => e.CreatedAt)
                 .Take(count)
                 .ToList();
@@ -76,12 +78,19 @@ namespace KorakPoKorak.Infrastructure.Repositories
 
         public void Delete(int id)
         {
-            var exercise = _context.Exercises.Find(id);
-            if (exercise != null)
+            var exercise = ExercisesWithContent().FirstOrDefault(e => e.Id == id);
+            if (exercise == null)
+                return;
+
+            var assets = exercise.ContentBlocks.Select(b => b.MediaAsset).ToList();
+            if (exercise.ContentBlocks.Count > 0)
             {
-                _context.Exercises.Remove(exercise);
-                _context.SaveChanges();
+                _context.ContentBlocks.RemoveRange(exercise.ContentBlocks);
+                _context.MediaAssets.RemoveRange(assets);
             }
+
+            _context.Exercises.Remove(exercise);
+            _context.SaveChanges();
         }
     }
 }
