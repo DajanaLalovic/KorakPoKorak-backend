@@ -18,6 +18,7 @@ namespace KorakPoKorak.Infrastructure.Repositories
         {
             var query = _context.Exercises
                 .Include(e => e.CreatedBy)
+                .Include(e => e.Workshops)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(q.Search))
@@ -47,13 +48,17 @@ namespace KorakPoKorak.Infrastructure.Repositories
 
         public Exercise? GetById(int id)
         {
-            return _context.Exercises.Include(e => e.CreatedBy).FirstOrDefault(e => e.Id == id);
+            return _context.Exercises
+                .Include(e => e.CreatedBy)
+                .Include(e => e.Workshops)
+                .FirstOrDefault(e => e.Id == id);
         }
 
         public List<Exercise> GetMy(int userId)
         {
             return _context.Exercises
                 .Include(e => e.CreatedBy)
+                .Include(e => e.Workshops)
                 .Where(e => e.CreatedById == userId)
                 .OrderByDescending(e => e.CreatedAt)
                 .ToList();
@@ -63,6 +68,7 @@ namespace KorakPoKorak.Infrastructure.Repositories
         {
             return _context.Exercises
                 .Include(e => e.CreatedBy)
+                .Include(e => e.Workshops)
                 .OrderByDescending(e => e.CreatedAt)
                 .Take(count)
                 .ToList();

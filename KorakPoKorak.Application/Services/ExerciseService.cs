@@ -78,7 +78,8 @@ namespace KorakPoKorak.Application.Services
             Status = e.Status,
             CreatedAt = e.CreatedAt,
             CreatedById = e.CreatedById,
-            CreatedByName = $"{e.CreatedBy.FirstName} {e.CreatedBy.LastName}"
+            CreatedByName = $"{e.CreatedBy.FirstName} {e.CreatedBy.LastName}",
+            WorkshopCount = e.Workshops?.Count ?? 0
         };
     }
 }
