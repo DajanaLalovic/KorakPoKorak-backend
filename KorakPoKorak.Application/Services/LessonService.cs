@@ -96,7 +96,7 @@ namespace KorakPoKorak.Application.Services
             CreatedAt = l.CreatedAt,
             CreatedById = l.CreatedById,
             CreatedByName = $"{l.CreatedBy.FirstName} {l.CreatedBy.LastName}",
-            WorkshopCount = l.Workshops?.Count ?? 0
+            WorkshopCount = l.Workshops?.Count ?? 0,
             ContentBlocks = ContentBlockMapper.ToDtoList(l.ContentBlocks)
         };
     }
