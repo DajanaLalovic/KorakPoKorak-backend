@@ -11,6 +11,8 @@
         public bool IsActive { get; set; } = false;
         public string? ActivationToken { get; set; }
         public DateTime? ActivationTokenExpires { get; set; }
+        public string? PasswordResetToken { get; set; }
+        public DateTime? PasswordResetTokenExpires { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public int RoleId { get; set; }

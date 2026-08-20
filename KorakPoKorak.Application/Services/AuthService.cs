@@ -99,7 +99,7 @@ namespace KorakPoKorak.Application.Services
             };
 
             _repo.Add(user);
-            _emailService.SendActivationEmail(user.Email, user.FirstName, activationToken);
+            _emailService.SendActivationEmail(user.Email, user.FirstName, activationToken, dto.Language);
 
             return new RegisterResponseDto
             {
@@ -125,6 +125,43 @@ namespace KorakPoKorak.Application.Services
             user.IsActive = true;
             user.ActivationToken = null;
             user.ActivationTokenExpires = null;
+            _repo.Update(user);
+        }
+
+        public void ForgotPassword(ForgotPasswordDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email))
+                return;
+
+            var user = _repo.GetByEmail(dto.Email);
+            if (user == null)
+                return;
+
+            var resetToken = Guid.NewGuid().ToString("N");
+            user.PasswordResetToken = resetToken;
+            user.PasswordResetTokenExpires = DateTime.UtcNow.AddHours(24);
+            _repo.Update(user);
+
+            _emailService.SendPasswordResetEmail(user.Email, user.FirstName, resetToken, dto.Language);
+        }
+
+        public void ResetPassword(ResetPasswordDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Token))
+                throw new InvalidOperationException("Reset token is missing.");
+
+            if (string.IsNullOrWhiteSpace(dto.NewPassword) || dto.NewPassword.Length < 6)
+                throw new InvalidOperationException("Password must be at least 6 characters.");
+
+            var user = _repo.GetByPasswordResetToken(dto.Token)
+                ?? throw new KeyNotFoundException("This reset link is invalid.");
+
+            if (user.PasswordResetTokenExpires.HasValue && user.PasswordResetTokenExpires.Value < DateTime.UtcNow)
+                throw new InvalidOperationException("This reset link has expired. Please request a new one.");
+
+            user.PasswordHash = _passwordHasher.Hash(dto.NewPassword);
+            user.PasswordResetToken = null;
+            user.PasswordResetTokenExpires = null;
             _repo.Update(user);
         }
     }

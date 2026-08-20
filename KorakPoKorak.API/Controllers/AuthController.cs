@@ -75,14 +75,43 @@ namespace KorakPoKorak.API.Controllers
         }
 
         /// <summary>
-        /// Stub: sends a password-reset email. Returns success regardless (email service not yet implemented).
+        /// Sends a password-reset email if the address exists. Always returns success
+        /// so callers cannot tell whether the email is registered.
         /// </summary>
         [HttpPost("forgot-password")]
         public IActionResult ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
-            // Email delivery is not implemented yet. Return 200 to avoid leaking
-            // whether a given address exists in the system.
+            try
+            {
+                _authService.ForgotPassword(dto);
+            }
+            catch
+            {
+                // Always succeed so we do not leak whether the email exists.
+            }
+
             return Ok(new { success = true });
+        }
+
+        /// <summary>
+        /// Sets a new password using the token from the reset email.
+        /// </summary>
+        [HttpPost("reset-password")]
+        public IActionResult ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            try
+            {
+                _authService.ResetPassword(dto);
+                return Ok(new { message = "Password updated. You can now log in." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

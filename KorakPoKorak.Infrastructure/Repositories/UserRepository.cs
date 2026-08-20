@@ -35,6 +35,13 @@ namespace KorakPoKorak.Infrastructure.Repositories
                 .FirstOrDefault(u => u.ActivationToken == token);
         }
 
+        public User? GetByPasswordResetToken(string token)
+        {
+            return _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefault(u => u.PasswordResetToken == token);
+        }
+
         public void Add(User user)
         {
             _context.Users.Add(user);

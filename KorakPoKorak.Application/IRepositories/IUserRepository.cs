@@ -8,6 +8,7 @@ namespace KorakPoKorak.Application.IRepositories
         User? GetById(int id);
         User? GetByEmail(string email);
         User? GetByActivationToken(string token);
+        User? GetByPasswordResetToken(string token);
         void Add(User user);
         void Update(User user);
         void Delete(int id);

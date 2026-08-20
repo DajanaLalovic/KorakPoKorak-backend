@@ -9,5 +9,6 @@ namespace KorakPoKorak.Application.DTOs
         public string Password { get; set; } = string.Empty;
         public string? Phone { get; set; }
         public string? Role { get; set; }
+        public string? Language { get; set; }
     }
 }

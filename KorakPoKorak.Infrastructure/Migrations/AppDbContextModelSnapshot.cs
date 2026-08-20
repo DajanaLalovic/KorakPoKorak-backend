@@ -787,6 +787,12 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpires")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Phone")
                         .HasColumnType("text");
 
@@ -796,6 +802,9 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ActivationToken")
+                        .IsUnique();
+
+                    b.HasIndex("PasswordResetToken")
                         .IsUnique();
 
                     b.HasIndex("RoleId");

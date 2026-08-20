@@ -40,6 +40,10 @@ public class AppDbContext : DbContext
             .HasIndex(u => u.ActivationToken)
             .IsUnique();
 
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.PasswordResetToken)
+            .IsUnique();
+
         // Lesson → User (created by)
         modelBuilder.Entity<Lesson>()
             .HasOne(l => l.CreatedBy)
