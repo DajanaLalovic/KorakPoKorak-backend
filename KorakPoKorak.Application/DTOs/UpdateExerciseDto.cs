@@ -9,5 +9,6 @@ namespace KorakPoKorak.Application.DTOs
         public bool IsPrintable { get; set; }
         public ContentStatus Status { get; set; } = ContentStatus.Draft;
         public List<ContentBlockInputDto>? ContentBlocks { get; set; }
+        public int? QuizId { get; set; }
     }
 }

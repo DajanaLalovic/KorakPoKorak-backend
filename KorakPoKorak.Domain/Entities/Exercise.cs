@@ -14,6 +14,9 @@ namespace KorakPoKorak.Domain.Entities
         public int CreatedById { get; set; }
         public User CreatedBy { get; set; } = null!;
 
+        public int? QuizId { get; set; }
+        public Quiz? Quiz { get; set; }
+
         public ICollection<Workshop> Workshops { get; set; } = new List<Workshop>();
         public ICollection<ContentBlock> ContentBlocks { get; set; } = new List<ContentBlock>();
     }

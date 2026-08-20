@@ -112,8 +112,8 @@ namespace KorakPoKorak.Application.Services
             CreatedByName = q.CreatedBy != null
                 ? $"{q.CreatedBy.FirstName} {q.CreatedBy.LastName}"
                 : string.Empty,
-            QuestionCount = q.Questions.Count,
-            Questions     = q.Questions
+            QuestionCount = q.Questions?.Count ?? 0,
+            Questions     = (q.Questions ?? [])
                 .OrderBy(qq => qq.OrderIndex)
                 .Select(qq => new QuestionDto
                 {
@@ -122,7 +122,7 @@ namespace KorakPoKorak.Application.Services
                     Type       = qq.Type.ToString(),
                     Points     = qq.Points,
                     OrderIndex = qq.OrderIndex,
-                    Answers    = qq.Answers
+                    Answers    = (qq.Answers ?? [])
                         .OrderBy(a => a.OrderIndex)
                         .Select(a => new AnswerDto
                         {

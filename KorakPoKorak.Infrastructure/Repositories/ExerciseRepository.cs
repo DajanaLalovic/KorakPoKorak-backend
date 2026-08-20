@@ -17,6 +17,11 @@ namespace KorakPoKorak.Infrastructure.Repositories
         private IQueryable<Exercise> ExercisesWithContent() =>
             _context.Exercises
                 .Include(e => e.CreatedBy)
+                .Include(e => e.Quiz!)
+                    .ThenInclude(q => q.CreatedBy)
+                .Include(e => e.Quiz!)
+                    .ThenInclude(q => q.Questions)
+                        .ThenInclude(qq => qq.Answers)
                 .Include(e => e.ContentBlocks)
                     .ThenInclude(b => b.MediaAsset);
 

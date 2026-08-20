@@ -90,6 +90,16 @@ public class AppDbContext : DbContext
             .HasForeignKey(qz => qz.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Exercise → Quiz (optional, reusable)
+        modelBuilder.Entity<Exercise>()
+            .HasOne(e => e.Quiz)
+            .WithMany()
+            .HasForeignKey(e => e.QuizId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Exercise>()
+            .HasIndex(e => e.QuizId);
+
         // Question → Quiz (cascade delete)
         modelBuilder.Entity<Question>()
             .HasOne(qq => qq.Quiz)

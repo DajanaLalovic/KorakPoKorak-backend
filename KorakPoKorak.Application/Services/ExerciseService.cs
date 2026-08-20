@@ -9,11 +9,16 @@ namespace KorakPoKorak.Application.Services
     {
         private readonly IExerciseRepository _repo;
         private readonly IContentBlockRepository _contentRepo;
+        private readonly IQuizRepository _quizRepo;
 
-        public ExerciseService(IExerciseRepository repo, IContentBlockRepository contentRepo)
+        public ExerciseService(
+            IExerciseRepository repo,
+            IContentBlockRepository contentRepo,
+            IQuizRepository quizRepo)
         {
             _repo = repo;
             _contentRepo = contentRepo;
+            _quizRepo = quizRepo;
         }
 
         public PagedResult<ExerciseDto> GetFiltered(ExerciseQueryParams q)
@@ -46,6 +51,8 @@ namespace KorakPoKorak.Application.Services
 
         public ExerciseDto Create(CreateExerciseDto dto, int createdById)
         {
+            EnsureQuizExists(dto.QuizId);
+
             var exercise = new Exercise
             {
                 Title = dto.Title,
@@ -53,7 +60,8 @@ namespace KorakPoKorak.Application.Services
                 IsPrintable = dto.IsPrintable,
                 Status = dto.Status,
                 CreatedAt = DateTime.UtcNow,
-                CreatedById = createdById
+                CreatedById = createdById,
+                QuizId = dto.QuizId
             };
             _repo.Add(exercise);
 
@@ -70,10 +78,14 @@ namespace KorakPoKorak.Application.Services
         {
             var exercise = _repo.GetById(id)
                 ?? throw new KeyNotFoundException($"Exercise with id {id} not found.");
+
+            EnsureQuizExists(dto.QuizId);
+
             exercise.Title = dto.Title;
             exercise.EstimatedTime = dto.EstimatedTime;
             exercise.IsPrintable = dto.IsPrintable;
             exercise.Status = dto.Status;
+            exercise.QuizId = dto.QuizId;
             _repo.Update(exercise);
 
             if (dto.ContentBlocks != null)
@@ -89,6 +101,13 @@ namespace KorakPoKorak.Application.Services
 
         public void Delete(int id) => _repo.Delete(id);
 
+        private void EnsureQuizExists(int? quizId)
+        {
+            if (!quizId.HasValue) return;
+            if (_quizRepo.GetById(quizId.Value) == null)
+                throw new ArgumentException($"Quiz with id {quizId.Value} was not found.");
+        }
+
         internal static ExerciseDto MapToDto(Exercise e) => new()
         {
             Id = e.Id,
@@ -100,7 +119,9 @@ namespace KorakPoKorak.Application.Services
             CreatedById = e.CreatedById,
             CreatedByName = $"{e.CreatedBy.FirstName} {e.CreatedBy.LastName}",
             WorkshopCount = e.Workshops?.Count ?? 0,
-            ContentBlocks = ContentBlockMapper.ToDtoList(e.ContentBlocks)
+            ContentBlocks = ContentBlockMapper.ToDtoList(e.ContentBlocks),
+            QuizId = e.QuizId,
+            Quiz = e.Quiz == null ? null : QuizService.MapToDto(e.Quiz)
         };
     }
 }
