@@ -740,12 +740,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         new
                         {
                             Id = 4,
-                            Description = "Parent who monitors and manages their child's learning progress.",
-                            RoleName = 2
-                        },
-                        new
-                        {
-                            Id = 4,
                             Description = "Parent who manages their children's profiles and activities.",
                             RoleName = 3
                         });

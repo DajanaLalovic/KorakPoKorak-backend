@@ -89,7 +89,8 @@ namespace KorakPoKorak.Application.Services
                 CreatedById = createdById
             };
 
-            _repo.Add(workshop, dto.LessonIds, dto.ExerciseIds, dto.ContributorIds);
+            var contributorIds = dto.ContributorIds.Where(id => id != createdById).ToList();
+            _repo.Add(workshop, dto.LessonIds, dto.ExerciseIds, contributorIds);
         }
 
         public void Update(int id, UpdateWorkshopDto dto)
@@ -105,7 +106,8 @@ namespace KorakPoKorak.Application.Services
             workshop.ActivityTypes = dto.ActivityTypes;
             workshop.Status = dto.Status;
 
-            _repo.Update(workshop, dto.LessonIds, dto.ExerciseIds, dto.ContributorIds);
+            var contributorIds = dto.ContributorIds.Where(id => id != workshop.CreatedById).ToList();
+            _repo.Update(workshop, dto.LessonIds, dto.ExerciseIds, contributorIds);
         }
 
         public void Delete(int id)
