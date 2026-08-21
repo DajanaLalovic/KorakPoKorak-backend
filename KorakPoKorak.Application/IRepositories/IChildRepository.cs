@@ -6,6 +6,8 @@ namespace KorakPoKorak.Application.IRepositories
     {
         List<ChildProfile> GetByParent(int parentId);
         ChildProfile? GetByIdForParent(int childId, int parentId);
+        ChildProfile? GetById(int childId);
+        List<ChildProfile> GetAllActive();
         void Add(ChildProfile child);
         void Update(ChildProfile child);
         void Delete(ChildProfile child);

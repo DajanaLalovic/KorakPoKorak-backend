@@ -10,5 +10,6 @@ namespace KorakPoKorak.Domain.Entities
         public User CreatedBy { get; set; } = null!;
 
         public ICollection<Question> Questions { get; set; } = new List<Question>();
+        public ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
     }
 }

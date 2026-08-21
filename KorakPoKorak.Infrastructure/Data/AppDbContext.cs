@@ -93,7 +93,7 @@ public class AppDbContext : DbContext
         // Exercise → Quiz (optional, reusable)
         modelBuilder.Entity<Exercise>()
             .HasOne(e => e.Quiz)
-            .WithMany()
+            .WithMany(q => q.Exercises)
             .HasForeignKey(e => e.QuizId)
             .OnDelete(DeleteBehavior.SetNull);
 

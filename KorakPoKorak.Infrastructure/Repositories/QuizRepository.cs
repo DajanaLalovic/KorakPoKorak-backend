@@ -20,6 +20,7 @@ namespace KorakPoKorak.Infrastructure.Repositories
                 .Include(qz => qz.CreatedBy)
                 .Include(qz => qz.Questions)
                     .ThenInclude(qq => qq.Answers)
+                .Include(qz => qz.Exercises)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(q.Search))
@@ -47,6 +48,7 @@ namespace KorakPoKorak.Infrastructure.Repositories
                 .Include(qz => qz.CreatedBy)
                 .Include(qz => qz.Questions.OrderBy(qq => qq.OrderIndex))
                     .ThenInclude(qq => qq.Answers.OrderBy(a => a.OrderIndex))
+                .Include(qz => qz.Exercises)
                 .FirstOrDefault(qz => qz.Id == id);
         }
 
@@ -56,6 +58,7 @@ namespace KorakPoKorak.Infrastructure.Repositories
                 .Include(qz => qz.CreatedBy)
                 .Include(qz => qz.Questions)
                     .ThenInclude(qq => qq.Answers)
+                .Include(qz => qz.Exercises)
                 .Where(qz => qz.CreatedById == userId)
                 .OrderByDescending(qz => qz.CreatedAt)
                 .ToList();
@@ -67,24 +70,29 @@ namespace KorakPoKorak.Infrastructure.Repositories
             _context.SaveChanges();
         }
 
-        public void Update(Quiz quiz)
+        public void Update(Quiz incoming)
         {
-            // Remove existing questions/answers and replace with new ones (simplest approach)
             var existing = _context.Quizzes
+                .Include(qz => qz.CreatedBy)
+                .Include(qz => qz.Exercises)
                 .Include(qz => qz.Questions)
                     .ThenInclude(qq => qq.Answers)
-                .First(qz => qz.Id == quiz.Id);
+                .FirstOrDefault(qz => qz.Id == incoming.Id)
+                ?? throw new KeyNotFoundException($"Quiz with id {incoming.Id} not found.");
 
-            existing.Title = quiz.Title;
+            existing.Title = incoming.Title;
 
-            // Delete old questions (cascade deletes answers)
-            _context.Questions.RemoveRange(existing.Questions);
+            var oldQuestions = existing.Questions.ToList();
+            _context.Questions.RemoveRange(oldQuestions);
+            existing.Questions.Clear();
 
-            // Add new questions
-            foreach (var q in quiz.Questions)
+            foreach (var question in incoming.Questions)
             {
-                q.QuizId = existing.Id;
-                _context.Questions.Add(q);
+                question.Id = 0;
+                question.QuizId = existing.Id;
+                foreach (var answer in question.Answers)
+                    answer.Id = 0;
+                existing.Questions.Add(question);
             }
 
             _context.SaveChanges();

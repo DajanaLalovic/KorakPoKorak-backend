@@ -44,6 +44,32 @@ namespace KorakPoKorak.Application.Services
             return _repo.GetMy(userId).Select(MapToDto).ToList();
         }
 
+        public MentorStudentCountDto GetMyStudentCount(int userId)
+        {
+            return new MentorStudentCountDto
+            {
+                StudentCount = _repo.CountDistinctStudents(userId)
+            };
+        }
+
+        public List<WorkshopStudentDto> GetStudents(int workshopId)
+        {
+            if (_repo.GetById(workshopId) == null)
+                throw new KeyNotFoundException($"Workshop with id {workshopId} not found.");
+
+            return _repo.GetActiveEnrollments(workshopId).Select(e => new WorkshopStudentDto
+            {
+                EnrollmentId   = e.Id,
+                ChildProfileId = e.ChildProfileId,
+                FirstName      = e.ChildProfile.FirstName,
+                LastName       = e.ChildProfile.LastName,
+                Gender         = e.ChildProfile.Gender,
+                AvatarUrl      = e.ChildProfile.AvatarUrl,
+                Status         = e.Status,
+                EnrolledAt     = e.EnrolledAt
+            }).ToList();
+        }
+
         public List<WorkshopDto> GetRecent(int count)
         {
             return _repo.GetRecent(count).Select(MapToDto).ToList();
@@ -69,7 +95,7 @@ namespace KorakPoKorak.Application.Services
                 WorkshopId = id,
                 LessonCount = workshop.Lessons.Count,
                 ExerciseCount = workshop.Exercises.Count,
-                EnrollmentCount = 0,
+                EnrollmentCount = _repo.CountActiveEnrollments(id),
                 CompletionRate = 0
             };
         }

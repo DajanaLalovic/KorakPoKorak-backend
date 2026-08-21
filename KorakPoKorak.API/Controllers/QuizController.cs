@@ -67,6 +67,10 @@ namespace KorakPoKorak.API.Controllers
             {
                 return NotFound();
             }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         /// <summary>Deletes a quiz and all its questions/answers.</summary>

@@ -66,27 +66,27 @@ namespace KorakPoKorak.Application.Services
 
         public QuizDto Update(int id, UpdateQuizDto dto)
         {
-            var quiz = _repo.GetById(id)
-                ?? throw new KeyNotFoundException($"Quiz with id {id} not found.");
-
-            quiz.Title = dto.Title;
-
-            quiz.Questions = dto.Questions.Select((qDto, i) => new Question
+            var incoming = new Quiz
             {
-                Text       = qDto.Text,
-                Type       = ParseType(qDto.Type),
-                Points     = qDto.Points > 0 ? qDto.Points : 1,
-                OrderIndex = qDto.OrderIndex > 0 ? qDto.OrderIndex : i,
-                Answers    = qDto.Answers.Select((aDto, j) => new Answer
+                Id = id,
+                Title = dto.Title,
+                Questions = dto.Questions.Select((qDto, i) => new Question
                 {
-                    Text       = aDto.Text,
-                    IsCorrect  = aDto.IsCorrect,
-                    OrderIndex = aDto.OrderIndex > 0 ? aDto.OrderIndex : j
+                    Text       = qDto.Text,
+                    Type       = ParseType(qDto.Type),
+                    Points     = qDto.Points > 0 ? qDto.Points : 1,
+                    OrderIndex = qDto.OrderIndex > 0 ? qDto.OrderIndex : i,
+                    Answers    = qDto.Answers.Select((aDto, j) => new Answer
+                    {
+                        Text       = aDto.Text,
+                        IsCorrect  = aDto.IsCorrect,
+                        OrderIndex = aDto.OrderIndex > 0 ? aDto.OrderIndex : j
+                    }).ToList()
                 }).ToList()
-            }).ToList();
+            };
 
-            _repo.Update(quiz);
-            return MapToDto(quiz);
+            _repo.Update(incoming);
+            return MapToDto(_repo.GetById(id)!);
         }
 
         public void Delete(int id)
@@ -113,6 +113,7 @@ namespace KorakPoKorak.Application.Services
                 ? $"{q.CreatedBy.FirstName} {q.CreatedBy.LastName}"
                 : string.Empty,
             QuestionCount = q.Questions?.Count ?? 0,
+            ExerciseCount = q.Exercises?.Count ?? 0,
             Questions     = (q.Questions ?? [])
                 .OrderBy(qq => qq.OrderIndex)
                 .Select(qq => new QuestionDto

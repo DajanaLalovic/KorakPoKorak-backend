@@ -39,6 +39,15 @@ namespace KorakPoKorak.API.Controllers
             return Ok(_service.GetMy(userId));
         }
 
+        /// <summary>Unique students enrolled in the current mentor's workshops (active + completed).</summary>
+        [HttpGet("my/student-count")]
+        [Authorize(Roles = "Administrator,Mentor")]
+        public IActionResult GetMyStudentCount()
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            return Ok(_service.GetMyStudentCount(userId));
+        }
+
         /// <summary>Returns total, published, and draft workshop counts in one call.</summary>
         [HttpGet("summary")]
         public IActionResult GetSummary()
@@ -73,6 +82,21 @@ namespace KorakPoKorak.API.Controllers
         public IActionResult GetExercises(int id)
         {
             return Ok(_service.GetExercises(id));
+        }
+
+        /// <summary>Returns students enrolled in this workshop (active + completed).</summary>
+        [HttpGet("{id:int}/students")]
+        [Authorize(Roles = "Administrator,Mentor")]
+        public IActionResult GetStudents(int id)
+        {
+            try
+            {
+                return Ok(_service.GetStudents(id));
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>Returns lesson/exercise counts and enrollment stats for a workshop.</summary>

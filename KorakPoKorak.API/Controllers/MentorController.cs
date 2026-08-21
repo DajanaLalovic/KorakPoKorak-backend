@@ -10,10 +10,12 @@ namespace KorakPoKorak.API.Controllers
     public class MentorController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IChildService _childService;
 
-        public MentorController(IUserService userService)
+        public MentorController(IUserService userService, IChildService childService)
         {
             _userService = userService;
+            _childService = childService;
         }
 
         /// <summary>Returns all users with the Mentor role. Used for contributor pickers.</summary>
@@ -21,6 +23,13 @@ namespace KorakPoKorak.API.Controllers
         public IActionResult GetAll()
         {
             return Ok(_userService.GetMentors());
+        }
+
+        /// <summary>Returns all active child profiles so mentors can enroll them in workshops.</summary>
+        [HttpGet("students")]
+        public IActionResult GetStudents()
+        {
+            return Ok(_childService.GetAllForMentor());
         }
     }
 }

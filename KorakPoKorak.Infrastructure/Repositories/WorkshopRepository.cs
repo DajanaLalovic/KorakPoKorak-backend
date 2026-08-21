@@ -83,6 +83,32 @@ namespace KorakPoKorak.Infrastructure.Repositories
                 .ToList();
         }
 
+        public int CountDistinctStudents(int createdById)
+        {
+            return _context.Enrollments
+                .Where(e => e.Workshop.CreatedById == createdById
+                         && e.Status != EnrollmentStatus.Withdrawn)
+                .Select(e => e.ChildProfileId)
+                .Distinct()
+                .Count();
+        }
+
+        public int CountActiveEnrollments(int workshopId)
+        {
+            return _context.Enrollments.Count(e =>
+                e.WorkshopId == workshopId && e.Status != EnrollmentStatus.Withdrawn);
+        }
+
+        public List<Enrollment> GetActiveEnrollments(int workshopId)
+        {
+            return _context.Enrollments
+                .Include(e => e.ChildProfile)
+                .Where(e => e.WorkshopId == workshopId && e.Status != EnrollmentStatus.Withdrawn)
+                .OrderBy(e => e.ChildProfile.LastName)
+                .ThenBy(e => e.ChildProfile.FirstName)
+                .ToList();
+        }
+
         public List<Workshop> GetRecent(int count)
         {
             return _context.Workshops

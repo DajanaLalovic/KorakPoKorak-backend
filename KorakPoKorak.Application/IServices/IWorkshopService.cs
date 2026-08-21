@@ -9,6 +9,8 @@ namespace KorakPoKorak.Application.IServices
         WorkshopSummaryDto GetSummary();
         WorkshopDto? GetById(int id);
         List<WorkshopDto> GetMy(int userId);
+        MentorStudentCountDto GetMyStudentCount(int userId);
+        List<WorkshopStudentDto> GetStudents(int workshopId);
         List<WorkshopDto> GetRecent(int count);
         List<LessonDto> GetLessons(int workshopId);
         List<ExerciseDto> GetExercises(int workshopId);

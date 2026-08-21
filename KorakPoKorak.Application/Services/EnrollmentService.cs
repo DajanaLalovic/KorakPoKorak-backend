@@ -30,6 +30,19 @@ namespace KorakPoKorak.Application.Services
             var child = _childRepo.GetByIdForParent(childId, parentId)
                 ?? throw new KeyNotFoundException($"Child with id {childId} not found.");
 
+            return CreateEnrollment(child, dto);
+        }
+
+        public EnrollmentDto EnrollAsMentor(int childId, CreateEnrollmentDto dto)
+        {
+            var child = _childRepo.GetById(childId)
+                ?? throw new KeyNotFoundException($"Child with id {childId} not found.");
+
+            return CreateEnrollment(child, dto);
+        }
+
+        private EnrollmentDto CreateEnrollment(ChildProfile child, CreateEnrollmentDto dto)
+        {
             var workshop = _workshopRepo.GetById(dto.WorkshopId)
                 ?? throw new ArgumentException($"Workshop with id {dto.WorkshopId} was not found.");
 
@@ -47,11 +60,8 @@ namespace KorakPoKorak.Application.Services
             };
 
             _enrollmentRepo.Add(enrollment);
-
-            // Reload with workshop for DTO mapping
-            enrollment = _enrollmentRepo.GetByIdForParent(enrollment.Id, childId, parentId)
-                ?? enrollment;
-            enrollment.Workshop ??= workshop;
+            enrollment.Workshop = workshop;
+            enrollment.ChildProfile = child;
 
             return MapToDto(enrollment);
         }
