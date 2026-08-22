@@ -44,6 +44,7 @@ builder.Services.AddScoped<IActivityProgressRepository, ActivityProgressReposito
 builder.Services.AddScoped<IContentBlockRepository, ContentBlockRepository>();
 builder.Services.AddScoped<IBadgeRepository, BadgeRepository>();
 builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
+builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 
 // Services
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
@@ -59,6 +60,7 @@ builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IActivityProgressService, ActivityProgressService>();
 builder.Services.AddScoped<IWorkshopAwardService, WorkshopAwardService>();
 builder.Services.AddSingleton<IFileStorageService, LocalFileStorageService>();
+builder.Services.AddScoped<IQuizService, QuizService>();
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"]!;
