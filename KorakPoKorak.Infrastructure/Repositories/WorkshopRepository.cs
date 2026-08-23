@@ -20,6 +20,7 @@ namespace KorakPoKorak.Infrastructure.Repositories
             var query = _context.Workshops
                 .Include(w => w.Lessons)
                 .Include(w => w.Exercises)
+                .Include(w => w.Contributors)
                 .Include(w => w.CreatedBy)
                 .AsQueryable();
 
@@ -35,6 +36,12 @@ namespace KorakPoKorak.Infrastructure.Repositories
 
             if (q.Complexity.HasValue)
                 query = query.Where(w => w.ComplexityLevel == q.Complexity.Value);
+
+            if (q.CreatedById.HasValue)
+                query = query.Where(w => w.CreatedById == q.CreatedById.Value);
+
+            if (q.ContributorId.HasValue)
+                query = query.Where(w => w.Contributors.Any(c => c.Id == q.ContributorId.Value));
 
             var total = query.Count();
             var items = query
@@ -59,6 +66,7 @@ namespace KorakPoKorak.Infrastructure.Repositories
             return _context.Workshops
                 .Include(w => w.Lessons)
                 .Include(w => w.Exercises)
+                .Include(w => w.Contributors)
                 .Include(w => w.CreatedBy)
                 .FirstOrDefault(w => w.Id == id);
         }
@@ -68,9 +76,36 @@ namespace KorakPoKorak.Infrastructure.Repositories
             return _context.Workshops
                 .Include(w => w.Lessons)
                 .Include(w => w.Exercises)
+                .Include(w => w.Contributors)
                 .Include(w => w.CreatedBy)
                 .Where(w => w.CreatedById == userId)
                 .OrderByDescending(w => w.CreatedAt)
+                .ToList();
+        }
+
+        public int CountDistinctStudents(int createdById)
+        {
+            return _context.Enrollments
+                .Where(e => e.Workshop.CreatedById == createdById
+                         && e.Status != EnrollmentStatus.Withdrawn)
+                .Select(e => e.ChildProfileId)
+                .Distinct()
+                .Count();
+        }
+
+        public int CountActiveEnrollments(int workshopId)
+        {
+            return _context.Enrollments.Count(e =>
+                e.WorkshopId == workshopId && e.Status != EnrollmentStatus.Withdrawn);
+        }
+
+        public List<Enrollment> GetActiveEnrollments(int workshopId)
+        {
+            return _context.Enrollments
+                .Include(e => e.ChildProfile)
+                .Where(e => e.WorkshopId == workshopId && e.Status != EnrollmentStatus.Withdrawn)
+                .OrderBy(e => e.ChildProfile.LastName)
+                .ThenBy(e => e.ChildProfile.FirstName)
                 .ToList();
         }
 
@@ -79,6 +114,7 @@ namespace KorakPoKorak.Infrastructure.Repositories
             return _context.Workshops
                 .Include(w => w.Lessons)
                 .Include(w => w.Exercises)
+                .Include(w => w.Contributors)
                 .Include(w => w.CreatedBy)
                 .OrderByDescending(w => w.CreatedAt)
                 .Take(count)
@@ -105,7 +141,7 @@ namespace KorakPoKorak.Infrastructure.Repositories
                 .ToList();
         }
 
-        public void Add(Workshop workshop, List<int> lessonIds, List<int> exerciseIds)
+        public void Add(Workshop workshop, List<int> lessonIds, List<int> exerciseIds, List<int> contributorIds)
         {
             if (lessonIds.Count > 0)
                 workshop.Lessons = _context.Lessons.Where(l => lessonIds.Contains(l.Id)).ToList();
@@ -113,15 +149,19 @@ namespace KorakPoKorak.Infrastructure.Repositories
             if (exerciseIds.Count > 0)
                 workshop.Exercises = _context.Exercises.Where(e => exerciseIds.Contains(e.Id)).ToList();
 
+            if (contributorIds.Count > 0)
+                workshop.Contributors = _context.Users.Where(u => contributorIds.Contains(u.Id)).ToList();
+
             _context.Workshops.Add(workshop);
             _context.SaveChanges();
         }
 
-        public void Update(Workshop workshop, List<int> lessonIds, List<int> exerciseIds)
+        public void Update(Workshop workshop, List<int> lessonIds, List<int> exerciseIds, List<int> contributorIds)
         {
             var existing = _context.Workshops
                 .Include(w => w.Lessons)
                 .Include(w => w.Exercises)
+                .Include(w => w.Contributors)
                 .FirstOrDefault(w => w.Id == workshop.Id);
 
             if (existing == null) return;
@@ -136,6 +176,7 @@ namespace KorakPoKorak.Infrastructure.Repositories
 
             existing.Lessons = _context.Lessons.Where(l => lessonIds.Contains(l.Id)).ToList();
             existing.Exercises = _context.Exercises.Where(e => exerciseIds.Contains(e.Id)).ToList();
+            existing.Contributors = _context.Users.Where(u => contributorIds.Contains(u.Id)).ToList();
 
             _context.SaveChanges();
         }

@@ -32,6 +32,16 @@ namespace KorakPoKorak.Application.Services
             return _repo.GetByParent(parentId).Select(MapToDto).ToList();
         }
 
+        public List<ChildProfileDto> GetAllActive()
+        {
+            return _repo.GetAllActive().Select(MapToDto).ToList();
+        }
+
+        public List<MentorStudentDto> GetAllForMentor()
+        {
+            return _repo.GetAllActive().Select(MapToMentorDto).ToList();
+        }
+
         public ChildProfileDto? GetById(int childId, int parentId)
         {
             var child = _repo.GetByIdForParent(childId, parentId);
@@ -189,6 +199,34 @@ namespace KorakPoKorak.Application.Services
             IsActive = c.IsActive,
             CreatedAt = c.CreatedAt,
             ParentId = c.ParentId
+        };
+
+        private static MentorStudentDto MapToMentorDto(ChildProfile c) => new()
+        {
+            Id = c.Id,
+            FirstName = c.FirstName,
+            LastName = c.LastName,
+            DateOfBirth = c.DateOfBirth,
+            Gender = c.Gender,
+            AvatarUrl = c.AvatarUrl,
+            Notes = c.Notes,
+            IsActive = c.IsActive,
+            CreatedAt = c.CreatedAt,
+            ParentId = c.ParentId,
+            ParentName = c.Parent != null
+                ? $"{c.Parent.FirstName} {c.Parent.LastName}".Trim()
+                : string.Empty,
+            Workshops = (c.Enrollments ?? [])
+                .Where(e => e.Status != EnrollmentStatus.Withdrawn)
+                .OrderByDescending(e => e.EnrolledAt)
+                .Select(e => new MentorStudentWorkshopDto
+                {
+                    EnrollmentId = e.Id,
+                    WorkshopId = e.WorkshopId,
+                    Title = e.Workshop?.Title ?? string.Empty,
+                    Status = e.Status,
+                    EnrolledAt = e.EnrolledAt
+                }).ToList()
         };
 
         internal static ChildSummaryDto MapToSummary(ChildProfile c) => new()

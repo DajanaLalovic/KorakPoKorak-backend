@@ -58,6 +58,40 @@ namespace KorakPoKorak.Application.Services
                 .ToList();
         }
 
+        public void Update(int id, UpdateUserDto dto)
+        {
+            var user = _repo.GetById(id)
+                ?? throw new KeyNotFoundException($"User with id {id} not found.");
+
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            user.Email = dto.Email;
+            user.Phone = dto.Phone;
+
+            _repo.Update(user);
+        }
+
+        public void SetActive(int id, bool isActive)
+        {
+            var user = _repo.GetById(id)
+                ?? throw new KeyNotFoundException($"User with id {id} not found.");
+
+            user.IsActive = isActive;
+            _repo.Update(user);
+        }
+
+        public void ChangeRole(int id, UserRole role)
+        {
+            var user = _repo.GetById(id)
+                ?? throw new KeyNotFoundException($"User with id {id} not found.");
+
+            var roleEntity = _roleRepo.GetByRoleType(role)
+                ?? throw new InvalidOperationException($"Role '{role}' not found.");
+
+            user.RoleId = roleEntity.Id;
+            _repo.Update(user);
+        }
+
         public void Delete(int id)
         {
             _repo.Delete(id);

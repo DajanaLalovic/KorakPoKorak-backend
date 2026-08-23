@@ -1,3 +1,5 @@
+using KorakPoKorak.Domain;
+
 namespace KorakPoKorak.Application.DTOs
 {
     public class CreateExerciseDto
@@ -5,7 +7,8 @@ namespace KorakPoKorak.Application.DTOs
         public string Title { get; set; } = string.Empty;
         public int EstimatedTime { get; set; }
         public bool IsPrintable { get; set; }
-        /// <summary>Optional. Omitted/null = no content blocks.</summary>
+        public ContentStatus Status { get; set; } = ContentStatus.Draft;
         public List<ContentBlockInputDto>? ContentBlocks { get; set; }
+        public int? QuizId { get; set; }
     }
 }

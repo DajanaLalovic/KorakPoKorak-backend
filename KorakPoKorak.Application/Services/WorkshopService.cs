@@ -44,6 +44,32 @@ namespace KorakPoKorak.Application.Services
             return _repo.GetMy(userId).Select(MapToDto).ToList();
         }
 
+        public MentorStudentCountDto GetMyStudentCount(int userId)
+        {
+            return new MentorStudentCountDto
+            {
+                StudentCount = _repo.CountDistinctStudents(userId)
+            };
+        }
+
+        public List<WorkshopStudentDto> GetStudents(int workshopId)
+        {
+            if (_repo.GetById(workshopId) == null)
+                throw new KeyNotFoundException($"Workshop with id {workshopId} not found.");
+
+            return _repo.GetActiveEnrollments(workshopId).Select(e => new WorkshopStudentDto
+            {
+                EnrollmentId   = e.Id,
+                ChildProfileId = e.ChildProfileId,
+                FirstName      = e.ChildProfile.FirstName,
+                LastName       = e.ChildProfile.LastName,
+                Gender         = e.ChildProfile.Gender,
+                AvatarUrl      = e.ChildProfile.AvatarUrl,
+                Status         = e.Status,
+                EnrolledAt     = e.EnrolledAt
+            }).ToList();
+        }
+
         public List<WorkshopDto> GetRecent(int count)
         {
             return _repo.GetRecent(count).Select(MapToDto).ToList();
@@ -69,7 +95,7 @@ namespace KorakPoKorak.Application.Services
                 WorkshopId = id,
                 LessonCount = workshop.Lessons.Count,
                 ExerciseCount = workshop.Exercises.Count,
-                EnrollmentCount = 0,
+                EnrollmentCount = _repo.CountActiveEnrollments(id),
                 CompletionRate = 0
             };
         }
@@ -89,7 +115,8 @@ namespace KorakPoKorak.Application.Services
                 CreatedById = createdById
             };
 
-            _repo.Add(workshop, dto.LessonIds, dto.ExerciseIds);
+            var contributorIds = dto.ContributorIds.Where(id => id != createdById).ToList();
+            _repo.Add(workshop, dto.LessonIds, dto.ExerciseIds, contributorIds);
         }
 
         public void Update(int id, UpdateWorkshopDto dto)
@@ -105,7 +132,8 @@ namespace KorakPoKorak.Application.Services
             workshop.ActivityTypes = dto.ActivityTypes;
             workshop.Status = dto.Status;
 
-            _repo.Update(workshop, dto.LessonIds, dto.ExerciseIds);
+            var contributorIds = dto.ContributorIds.Where(id => id != workshop.CreatedById).ToList();
+            _repo.Update(workshop, dto.LessonIds, dto.ExerciseIds, contributorIds);
         }
 
         public void Delete(int id)
@@ -151,6 +179,7 @@ namespace KorakPoKorak.Application.Services
             CreatedAt = w.CreatedAt,
             CreatedById = w.CreatedById,
             CreatedByName = $"{w.CreatedBy.FirstName} {w.CreatedBy.LastName}",
+            ContributorIds = w.Contributors.Select(c => c.Id).ToList(),
             LessonIds = w.Lessons.Select(l => l.Id).ToList(),
             ExerciseIds = w.Exercises.Select(e => e.Id).ToList()
         };

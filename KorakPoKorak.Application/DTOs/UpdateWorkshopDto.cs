@@ -11,6 +11,7 @@ namespace KorakPoKorak.Application.DTOs
         public WorkshopComplexity ComplexityLevel { get; set; }
         public List<string> ActivityTypes { get; set; } = new();
         public WorkshopStatus Status { get; set; }
+        public List<int> ContributorIds { get; set; } = new();
         public List<int> LessonIds { get; set; } = new();
         public List<int> ExerciseIds { get; set; } = new();
     }

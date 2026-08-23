@@ -17,6 +17,11 @@ namespace KorakPoKorak.Infrastructure.Repositories
         private IQueryable<Exercise> ExercisesWithContent() =>
             _context.Exercises
                 .Include(e => e.CreatedBy)
+                .Include(e => e.Quiz!)
+                    .ThenInclude(q => q.CreatedBy)
+                .Include(e => e.Quiz!)
+                    .ThenInclude(q => q.Questions)
+                        .ThenInclude(qq => qq.Answers)
                 .Include(e => e.ContentBlocks)
                     .ThenInclude(b => b.MediaAsset);
 
@@ -32,6 +37,12 @@ namespace KorakPoKorak.Infrastructure.Repositories
 
             if (q.Printable.HasValue)
                 query = query.Where(e => e.IsPrintable == q.Printable.Value);
+
+            if (q.CreatedById.HasValue)
+                query = query.Where(e => e.CreatedById == q.CreatedById.Value);
+
+            if (q.Status.HasValue)
+                query = query.Where(e => e.Status == q.Status.Value);
 
             var total = query.Count();
             var items = query

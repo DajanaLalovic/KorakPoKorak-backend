@@ -9,5 +9,8 @@ namespace KorakPoKorak.Application.DTOs
         public WorkshopStatus? Status { get; set; }
         public WorkshopComplexity? Complexity { get; set; }
         public string? Search { get; set; }
+        public bool OnlyMine { get; set; } = false;
+        public int? CreatedById { get; set; }
+        public int? ContributorId { get; set; }
     }
 }

@@ -12,6 +12,9 @@ public class AppDbContext : DbContext
     public DbSet<Workshop> Workshops { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<Exercise> Exercises { get; set; }
+    public DbSet<Quiz> Quizzes { get; set; }
+    public DbSet<Question> Questions { get; set; }
+    public DbSet<Answer> Answers { get; set; }
     public DbSet<ChildProfile> ChildProfiles { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
     public DbSet<ActivityProgress> ActivityProgresses { get; set; }
@@ -21,9 +24,6 @@ public class AppDbContext : DbContext
     public DbSet<BadgeAward> BadgeAwards { get; set; }
     public DbSet<CertificateTemplate> CertificateTemplates { get; set; }
     public DbSet<CertificateAward> CertificateAwards { get; set; }
-    public DbSet<Quiz> Quizzes { get; set; }
-    public DbSet<Question> Questions { get; set; }
-    public DbSet<Answer> Answers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,6 +35,14 @@ public class AppDbContext : DbContext
             .WithMany(r => r.Users)
             .HasForeignKey(u => u.RoleId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.ActivationToken)
+            .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.PasswordResetToken)
+            .IsUnique();
 
         // Lesson → User (created by)
         modelBuilder.Entity<Lesson>()
@@ -69,12 +77,28 @@ public class AppDbContext : DbContext
             .WithMany(e => e.Workshops)
             .UsingEntity("WorkshopExercises");
 
+        // Workshop ↔ User (contributors, many-to-many)
+        modelBuilder.Entity<Workshop>()
+            .HasMany(w => w.Contributors)
+            .WithMany()
+            .UsingEntity("WorkshopContributors");
+
         // Quiz → User (created by)
         modelBuilder.Entity<Quiz>()
             .HasOne(qz => qz.CreatedBy)
             .WithMany()
             .HasForeignKey(qz => qz.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Exercise → Quiz (optional, reusable)
+        modelBuilder.Entity<Exercise>()
+            .HasOne(e => e.Quiz)
+            .WithMany(q => q.Exercises)
+            .HasForeignKey(e => e.QuizId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Exercise>()
+            .HasIndex(e => e.QuizId);
 
         // Question → Quiz (cascade delete)
         modelBuilder.Entity<Question>()

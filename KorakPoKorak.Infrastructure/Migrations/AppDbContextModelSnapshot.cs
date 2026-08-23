@@ -21,34 +21,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Answer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("OrderIndex")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("Answers");
-                });
-
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.ActivityProgress", b =>
                 {
                     b.Property<int>("Id")
@@ -81,6 +53,34 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("ActivityProgresses");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Answer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.BadgeAward", b =>
@@ -562,6 +562,12 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.Property<bool>("IsPrintable")
                         .HasColumnType("boolean");
 
+                    b.Property<int?>("QuizId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -569,6 +575,8 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
+
+                    b.HasIndex("QuizId");
 
                     b.ToTable("Exercises");
                 });
@@ -590,6 +598,9 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.Property<int>("EstimatedTime")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -599,6 +610,42 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.HasIndex("CreatedById");
 
                     b.ToTable("Lessons");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.MediaAsset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MimeType")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.ToTable("MediaAssets");
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Question", b =>
@@ -657,42 +704,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.ToTable("Quizzes");
                 });
 
-            modelBuilder.Entity("KorakPoKorak.Domain.Entities.MediaAsset", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("MimeType")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.ToTable("MediaAssets");
-                });
-
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -729,18 +740,12 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         {
                             Id = 3,
                             Description = "Child user of the platform.",
-                            RoleName = 3
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Parent who monitors and manages their child's learning progress.",
                             RoleName = 2
                         },
                         new
                         {
                             Id = 4,
-                            Description = "Parent who manages their children's profiles and activities.",
+                            Description = "Parent who monitors and manages their child's learning progress.",
                             RoleName = 3
                         });
                 });
@@ -752,6 +757,12 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ActivationToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ActivationTokenExpires")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -775,6 +786,12 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpires")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Phone")
                         .HasColumnType("text");
 
@@ -782,6 +799,12 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ActivationToken")
+                        .IsUnique();
+
+                    b.HasIndex("PasswordResetToken")
+                        .IsUnique();
 
                     b.HasIndex("RoleId");
 
@@ -833,6 +856,21 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.ToTable("Workshops");
                 });
 
+            modelBuilder.Entity("WorkshopContributors", b =>
+                {
+                    b.Property<int>("ContributorsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WorkshopId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ContributorsId", "WorkshopId");
+
+                    b.HasIndex("WorkshopId");
+
+                    b.ToTable("WorkshopContributors");
+                });
+
             modelBuilder.Entity("WorkshopExercises", b =>
                 {
                     b.Property<int>("ExercisesId")
@@ -872,6 +910,17 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Enrollment");
+                });
+
+            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Answer", b =>
+                {
+                    b.HasOne("KorakPoKorak.Domain.Entities.Question", "Question")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.BadgeAward", b =>
@@ -996,17 +1045,6 @@ namespace KorakPoKorak.Infrastructure.Migrations
                     b.Navigation("Workshop");
                 });
 
-            modelBuilder.Entity("KorakPoKorak.Domain.Entities.Answer", b =>
-                {
-                    b.HasOne("KorakPoKorak.Domain.Entities.Question", "Question")
-                        .WithMany("Answers")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Question");
-                });
-
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Exercise", b =>
                 {
                     b.HasOne("KorakPoKorak.Domain.Entities.User", "CreatedBy")
@@ -1015,7 +1053,14 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("KorakPoKorak.Domain.Entities.Quiz", "Quiz")
+                        .WithMany("Exercises")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("CreatedBy");
+
+                    b.Navigation("Quiz");
                 });
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Lesson", b =>
@@ -1082,6 +1127,21 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
+                });
+
+            modelBuilder.Entity("WorkshopContributors", b =>
+                {
+                    b.HasOne("KorakPoKorak.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("ContributorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("KorakPoKorak.Domain.Entities.Workshop", null)
+                        .WithMany()
+                        .HasForeignKey("WorkshopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("WorkshopExercises", b =>
@@ -1159,6 +1219,8 @@ namespace KorakPoKorak.Infrastructure.Migrations
 
             modelBuilder.Entity("KorakPoKorak.Domain.Entities.Quiz", b =>
                 {
+                    b.Navigation("Exercises");
+
                     b.Navigation("Questions");
                 });
 

@@ -38,29 +38,30 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IWorkshopRepository, WorkshopRepository>();
 builder.Services.AddScoped<ILessonRepository, LessonRepository>();
 builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
+builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 builder.Services.AddScoped<IChildRepository, ChildRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 builder.Services.AddScoped<IActivityProgressRepository, ActivityProgressRepository>();
 builder.Services.AddScoped<IContentBlockRepository, ContentBlockRepository>();
 builder.Services.AddScoped<IBadgeRepository, BadgeRepository>();
 builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
-builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 
 // Services
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 builder.Services.AddScoped<IWorkshopService, WorkshopService>();
 builder.Services.AddScoped<ILessonService, LessonService>();
 builder.Services.AddScoped<IExerciseService, ExerciseService>();
+builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IChildService, ChildService>();
 builder.Services.AddScoped<IChildStatsService, ChildStatsService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IActivityProgressService, ActivityProgressService>();
 builder.Services.AddScoped<IWorkshopAwardService, WorkshopAwardService>();
 builder.Services.AddSingleton<IFileStorageService, LocalFileStorageService>();
-builder.Services.AddScoped<IQuizService, QuizService>();
 
 // JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"]!;

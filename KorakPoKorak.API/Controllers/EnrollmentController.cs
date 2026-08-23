@@ -8,7 +8,7 @@ namespace KorakPoKorak.API.Controllers
 {
     [ApiController]
     [Route("api/child/{childId:int}/enrollment")]
-    [Authorize(Roles = "Parent")]
+    [Authorize]
     public class EnrollmentController : ControllerBase
     {
         private readonly IEnrollmentService _service;
@@ -18,14 +18,21 @@ namespace KorakPoKorak.API.Controllers
             _service = service;
         }
 
-        /// <summary>Enrolls the Parent's child into an existing Workshop.</summary>
+        /// <summary>Enrolls a child into a workshop. Parents can enroll their own children; mentors can enroll any child.</summary>
         [HttpPost]
+        [Authorize(Roles = "Administrator,Mentor,Parent")]
         public IActionResult Enroll(int childId, [FromBody] CreateEnrollmentDto dto)
         {
-            var parentId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             try
             {
-                var created = _service.Enroll(childId, parentId, dto);
+                EnrollmentDto created;
+                if (User.IsInRole("Mentor") || User.IsInRole("Administrator"))
+                    created = _service.EnrollAsMentor(childId, dto);
+                else
+                {
+                    var parentId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                    created = _service.Enroll(childId, parentId, dto);
+                }
                 return Ok(created);
             }
             catch (KeyNotFoundException)
@@ -40,6 +47,7 @@ namespace KorakPoKorak.API.Controllers
 
         /// <summary>Lists enrollments/workshops for the Parent's child.</summary>
         [HttpGet]
+        [Authorize(Roles = "Parent")]
         public IActionResult GetAll(int childId)
         {
             var parentId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -55,6 +63,7 @@ namespace KorakPoKorak.API.Controllers
 
         /// <summary>Returns one enrollment for the Parent's child.</summary>
         [HttpGet("{enrollmentId:int}")]
+        [Authorize(Roles = "Parent")]
         public IActionResult Get(int childId, int enrollmentId)
         {
             var parentId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -71,6 +80,7 @@ namespace KorakPoKorak.API.Controllers
 
         /// <summary>Updates enrollment status (Active / Completed / Withdrawn).</summary>
         [HttpPatch("{enrollmentId:int}/status")]
+        [Authorize(Roles = "Parent")]
         public IActionResult UpdateStatus(int childId, int enrollmentId, [FromBody] UpdateEnrollmentStatusDto dto)
         {
             var parentId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);

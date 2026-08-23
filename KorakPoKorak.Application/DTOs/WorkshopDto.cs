@@ -15,6 +15,7 @@ namespace KorakPoKorak.Application.DTOs
         public DateTime CreatedAt { get; set; }
         public int CreatedById { get; set; }
         public string CreatedByName { get; set; } = string.Empty;
+        public List<int> ContributorIds { get; set; } = new();
         public List<int> LessonIds { get; set; } = new();
         public List<int> ExerciseIds { get; set; } = new();
     }

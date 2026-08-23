@@ -37,10 +37,13 @@ namespace KorakPoKorak.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
+            // Parent role (Id = 4) already exists from AddParentRole — only refresh the description.
+            migrationBuilder.UpdateData(
                 table: "Roles",
-                columns: new[] { "Id", "Description", "RoleName" },
-                values: new object[] { 4, "Parent who manages their children's profiles and activities.", 3 });
+                keyColumn: "Id",
+                keyValue: 4,
+                column: "Description",
+                value: "Parent who manages their children's profiles and activities.");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChildProfiles_ParentId",
@@ -54,10 +57,12 @@ namespace KorakPoKorak.Infrastructure.Migrations
             migrationBuilder.DropTable(
                 name: "ChildProfiles");
 
-            migrationBuilder.DeleteData(
+            migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
-                keyValue: 4);
+                keyValue: 4,
+                column: "Description",
+                value: "Parent who monitors and manages their child's learning progress.");
         }
     }
 }
